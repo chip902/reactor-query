@@ -6,6 +6,8 @@ import Question from '@spectrum-icons/workflow/Question';
 import Checkmark from '@spectrum-icons/workflow/Checkmark';
 import Link from 'next/link';
 import Image from 'next/image';
+import Search from '@spectrum-icons/workflow/Search';
+import DataCorrelated from '@spectrum-icons/workflow/DataCorrelated';
 
 import { PRODUCT_NAME } from '@/lib/constants';
 
@@ -15,52 +17,60 @@ const MarketingSplash = () => {
             {/* Hero Section */}
             <div className="relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center py-12">
-                        {/* Left column - Text content */}
-                        <div className="sm:text-center lg:text-left">
-                            <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl flex items-center gap-4">
-                                <div className="flex flex-col">
+                    <div className="py-12 flex justify-center items-center">
+                        <div>
+                            <div className="text-center max-w-4xl mx-auto">
+                                <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                                     <span className="block">Welcome to</span>
                                     <span className="block text-blue-600">{PRODUCT_NAME}</span>
-                                </div>
-                            </h1>
-                            <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                                Connect your Launch properties to {PRODUCT_NAME} to add what Launch is missing.
-                            </p>
-                            <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                                <div className="flex flex-col items-center sm:items-start">
-                                    <Link href="/search">
-                                        <button className="w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
-                                            Get Started
-                                            <ArrowRight UNSAFE_className='ml-2 h-5 w-5' />
+                                </h1>
+                                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-2xl sm:mx-auto md:mt-5 md:text-xl">
+                                    Connect your Launch properties to {PRODUCT_NAME} to add what Launch is missing.
+                                </p>
+                                {/* CTA Buttons */}
+                                <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 max-w-2xl mx-auto">
+                                    <Link href="/search" className="sm:w-1/3">
+                                        <button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg whitespace-nowrap">
+                                            Start Searching
+                                            <Search UNSAFE_className='ml-2 h-5 w-5' />
                                         </button>
                                     </Link>
-                                </div>
-                                <div className="mt-3 sm:mt-0 sm:ml-3">
-                                    <Link href="#faq">
-                                        <button className="w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10">
+                                    <Link href="/relationships" className="sm:w-1/3">
+                                        <button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg whitespace-nowrap">
+                                            View Relationships
+                                            <DataCorrelated UNSAFE_className="ml-2 h-5 w-5" />
+                                        </button>
+                                    </Link>
+                                    <Link href="#faq" className="sm:w-1/3">
+                                        <button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg whitespace-nowrap">
                                             FAQ
                                             <Question UNSAFE_className="ml-2 h-5 w-5" />
                                         </button>
                                     </Link>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Right column - Video placeholder */}
-                        <div className="mt-12 lg:mt-0">
-                            <h2 className='text-xl font-bold text-blue-500'>Demo</h2>
-                            <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden bg-gray-100">
-
-                                {/* This div serves as a placeholder for your YouTube video */}
-                                <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-500 text-lg font-medium">
-                                    <iframe
-                                        width="560"
-                                        height="315"
-                                        src="https://www.youtube.com/embed/F2cjJTOLvSg?si=wPjsapV80x-0I2Mc"
-                                        title="YouTube video player"
-                                        frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                        referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                            {/* Features */}
+                            <div className="mt-16 w-full">
+                                <div className="max-w-[1400px] mx-auto px-4">
+                                    <p className="text-lg font-medium text-gray-900 mb-6 text-center">
+                                        Features:
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-16 justify-items-start">
+                                        {[
+                                            "Better Search Experience",
+                                            "Rule & Data Element Relationships",
+                                            "Data Element & Rule Export",
+                                            "View Entire Publish History"
+                                        ].map((feature) => (
+                                            <div key={feature} className="flex items-center gap-3 w-full">
+                                                <div className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded bg-blue-500 text-white">
+                                                    <Checkmark UNSAFE_className="h-4 w-4" />
+                                                </div>
+                                                <p className="text-sm text-gray-600 whitespace-normal sm:whitespace-nowrap">{feature}</p>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -68,28 +78,23 @@ const MarketingSplash = () => {
                 </div>
             </div>
 
-            {/* Feature Section */}
-            <div className="py-12 bg-white">
+            {/* Demo Video Section */}
+            <div className="py-12 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="lg:text-center">
-                        <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                            The features you didn&apos;t know you needed:
-                        </p>
-                    </div>
-
-                    <div className="mt-10">
-                        <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-                            {[
-                                "Better Search Experience",
-                                "Rule & Data Element Relationship Viewer",
-                            ].map((feature) => (
-                                <div key={feature} className="relative">
-                                    <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                                        <Checkmark UNSAFE_className="h-6 w-6" />
-                                    </div>
-                                    <p className="ml-16 mt-3 text-lg leading-6 font-medium text-gray-900">{feature}</p>
-                                </div>
-                            ))}
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-8">Watch The Demo</h2>
+                        <div className="max-w-3xl mx-auto rounded-lg overflow-hidden shadow-lg">
+                            <div className="relative" style={{ paddingBottom: '56.25%' }}>
+                                <iframe
+                                    className="absolute top-0 left-0 w-full h-full"
+                                    src="https://www.youtube.com/embed/F2cjJTOLvSg?si=wPjsapV80x-0I2Mc"
+                                    title="YouTube video player"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
                         </div>
                     </div>
                 </div>
