@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useApiCache } from '@/app/hooks/useApiCache';
 import { useApiKeys } from '@/app/hooks/useApiKeys';
+import { useAnalytics } from '@/app/hooks/useAnalytics';
 import WithApiKeys from '@/components/wrappers/WithApiKeys';
 import {
   Button,
@@ -49,6 +50,7 @@ type SearchApiResponse =
 
 const SearchContent = () => {
   const { apiKeys } = useApiKeys();
+  const { event } = useAnalytics();
   const { fetchCompanies, fetchProperties, fetchExtensions } = useApiCache();
   const [companies, setCompanies] = useState<TruncatedReactorAPIResponseItem[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<{ id: string; name: string }>({ id: '', name: '' });
@@ -159,7 +161,7 @@ const SearchContent = () => {
       setRuleResults(data.data.filter((item: RuleSearchResponseItem) => item.type === 'rules'));
       setDataElementResults(data.data.filter((item: DataElementSearchResponseItem) => item.type === 'data_elements'));
       setExtensionResults(data.data.filter((item: ExtensionSearchResponseItem) => item.type === 'extensions'));
-      // event({ action: 'search', category: 'engagement', label: 'search', value: 1 });
+      event({ action: 'search', category: 'engagement', label: 'search', value: 1 });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

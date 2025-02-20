@@ -7,6 +7,7 @@ import { Flex, Item, Text, ListView, Divider } from "@adobe/react-spectrum";
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import { TruncatedReactorAPIResponseItem } from '@/lib/types';
+import { useAnalytics } from '@/app/hooks/useAnalytics';
 
 // Components
 import CompanyPicker from '@/components/search/CompanyPicker';
@@ -64,6 +65,7 @@ const formatDelegateDescriptorId = (delegate_descriptor_id: string) => {
 
 const RelationshipsContent = () => {
     const { apiKeys } = useApiKeys();
+    const { event } = useAnalytics();
     const { fetchCompanies, fetchProperties } = useApiCache();
     const [companies, setCompanies] = useState<TruncatedReactorAPIResponseItem[]>([]);
     const [selectedCompany, setSelectedCompany] = useState<{ id: string; name: string }>({ id: '', name: '' });
@@ -353,7 +355,7 @@ const RelationshipsContent = () => {
                                     // @ts-expect-error fucking react spectrum types
                                     const rule = rules.find(p => p.id === key?.currentKey);
                                     setSelectedRule(rule ? { id: rule.id, name: rule.attributes.name } : { id: '', name: '' });
-                                    // event({ action: 'findDataElements', category: 'engagement', label: 'relationships', value: 1 });
+                                    event({ action: 'findDataElements', category: 'engagement', label: 'relationships', value: 1 });
                                 }}
                             >
                                 {(item) =>
@@ -425,7 +427,7 @@ const RelationshipsContent = () => {
                                     // @ts-expect-error fucking react spectrum types
                                     const dataElement = dataElements.find(p => p.id === key?.currentKey);
                                     setSelectedDataElement(dataElement ? { id: dataElement.id, name: dataElement.attributes.name } : { id: '', name: '' });
-                                    // event({ action: 'findRules', category: 'engagement', label: 'relationships', value: 1 });
+                                    event({ action: 'findRules', category: 'engagement', label: 'relationships', value: 1 });
                                 }}
                             >
                                 {(item) =>
