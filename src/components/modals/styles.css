@@ -1,0 +1,29 @@
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#addSignal {
+    color: white;
+    background-color:rgb(59,130,246);
+    font-weight: bold;
+    &:hover {
+        cursor: pointer;
+        background-color: darkblue;
+    }
+    svg {
+        margin-right: 0.5rem;   
+        fill: white;
+    }
+}

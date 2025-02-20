@@ -1,0 +1,10 @@
+{
+    "settings": {
+        "company": "Test Company",
+        "property": "Test Property",
+        "environment": "development",
+        "apiKey": "test-api-key",
+        "companyId": "test-company-id",
+        "propertyId": "test-property-id"
+    }
+}

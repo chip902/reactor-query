@@ -1,0 +1,52 @@
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.password-requirements {
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 4px;
+    background-color: var(--spectrum-global-color-gray-100);
+}
+
+.requirement {
+    margin: 4px 0;
+    color: var(--spectrum-global-color-gray-700);
+    transition: color 0.2s ease;
+}
+
+.requirement.met {
+    color: green
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 140px); /* Adjust based on your nav and footer height */
+    padding: 2rem 1rem;
+}
+
+.auth-container form {
+    width: 100%;
+    max-width: 400px;
+}
+
+#clear-settings-button {
+    &:hover {
+        cursor: pointer;
+        background-color: darkgray;
+    }
+}
