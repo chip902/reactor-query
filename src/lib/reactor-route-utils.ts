@@ -2,13 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@adobe/auth-token';
 const Reactor = require('@adobe/reactor-sdk').default;
+import { UserCredentials } from '@/lib/types';
 
-
-interface UserCredentials {
-    clientId: string;
-    clientSecret: string;
-    orgId: string;
-}
 type NoPostData = undefined;
 
 type ReactorHandlerFunction<T, P = NoPostData> = (

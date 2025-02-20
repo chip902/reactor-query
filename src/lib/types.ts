@@ -552,3 +552,9 @@ export interface MonthViewCalendarProps {
   currentDate: Date;
   onDateChange: (date: Date) => void;
 }
+
+export interface UserCredentials {
+  clientId: string;
+  clientSecret: string;
+  orgId: string;
+}
