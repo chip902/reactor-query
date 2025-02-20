@@ -13,9 +13,10 @@ jest.mock('next/link', () => {
 
 
 // Mock the spectrum icons
-jest.mock('@spectrum-icons/workflow/ArrowRight', () => () => <div data-testid="arrow-right-icon" />);
+jest.mock('@spectrum-icons/workflow/Search', () => () => <div data-testid="search-icon" />);
 jest.mock('@spectrum-icons/workflow/Question', () => () => <div data-testid="question-icon" />);
 jest.mock('@spectrum-icons/workflow/Checkmark', () => () => <div data-testid="checkmark-icon" />);
+jest.mock('@spectrum-icons/workflow/DataCorrelated', () => () => <div data-testid="data-correlated-icon" />);
 
 describe('MarketingSplash', () => {
   it('renders the main heading correctly', () => {
@@ -32,16 +33,37 @@ describe('MarketingSplash', () => {
     expect(screen.getByText(descriptionRegex)).toBeInTheDocument();
   });
 
-  it('renders navigation links correctly', () => {
+  it('renders navigation buttons correctly', () => {
     render(<MarketingSplash />);
     
-    const getStartedButtons = screen.getAllByRole('button', { name: /get started/i });
+    const searchButton = screen.getByRole('button', { name: /start searching/i });
+    const relationshipsButton = screen.getByRole('button', { name: /view relationships/i });
     const faqButton = screen.getByRole('button', { name: /faq/i });
     
-    // Check the primary get started button
-    expect(getStartedButtons[0]).toHaveClass('bg-blue-600');
-    expect(faqButton).toBeInTheDocument();
+    // Check buttons and their styling
+    expect(searchButton).toHaveClass('bg-blue-600');
+    expect(relationshipsButton).toHaveClass('bg-blue-600');
+    expect(faqButton).toHaveClass('bg-blue-100');
+
+    // Check links
+    expect(searchButton.closest('a')).toHaveAttribute('href', '/search');
+    expect(relationshipsButton.closest('a')).toHaveAttribute('href', '/relationships');
     expect(faqButton.closest('a')).toHaveAttribute('href', '#faq');
+  });
+
+  it('renders features correctly', () => {
+    render(<MarketingSplash />);
+
+    const features = [
+      'Better Search Experience',
+      'Rule & Data Element Relationships',
+      'Data Element & Rule Export',
+      'View Entire Publish History'
+    ];
+
+    features.forEach(feature => {
+      expect(screen.getByText(feature)).toBeInTheDocument();
+    });
   });
 
   it('renders with the correct styling classes', () => {
