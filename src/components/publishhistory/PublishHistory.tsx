@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import LoadingSpinner from '@/components/LoadingSpinner';
+// import LoadingSpinner from '@/components/LoadingSpinner';
 import { CalendarItem } from '@/lib/types';
 import { useAsyncList } from '@adobe/react-spectrum';
 import { format } from 'date-fns';
@@ -97,7 +97,8 @@ const PublishHistory = ({ selectedCompany, selectedProperty, apiKeys }: {
 
     return (
         <Flex direction="column" gap="size-100" marginBottom="size-200" marginTop='size-200'>
-            {(!apiKeys || libraries.isLoading) && <LoadingSpinner />}
+            {/* there is a bug with loading spinner and async list loading */}
+            {/* {(!apiKeys || libraries.isLoading) && <LoadingSpinner />} */}
             {apiKeys && !libraries.isLoading && !selectedProperty.id && (
                 <p>Select a property to view its publish history.</p>
             )}

@@ -83,15 +83,15 @@ const Features = () => {
                         <h2 className="text-3xl font-bold text-gray-900 mb-8">Watch The Demo (coming soon!)</h2>
                         <div className="max-w-3xl mx-auto rounded-lg overflow-hidden shadow-lg">
                             <div className="relative" style={{ paddingBottom: '56.25%' }}>
-                                {/* <iframe
+                                <iframe
                                     className="absolute top-0 left-0 w-full h-full"
-                                    src="https://www.youtube.com/embed/F2cjJTOLvSg?si=wPjsapV80x-0I2Mc"
+                                    src="https://www.youtube.com/embed/qtV16-6A3Gc?si=iFSR7pUwPqXXE4x2"
                                     title="YouTube video player"
                                     frameBorder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerPolicy="strict-origin-when-cross-origin"
                                     allowFullScreen
-                                ></iframe> */}
+                                ></iframe>
                             </div>
                         </div>
                     </div>
