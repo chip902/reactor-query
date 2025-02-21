@@ -10,7 +10,6 @@ import Search from '@spectrum-icons/workflow/Search';
 import Settings from '@spectrum-icons/workflow/Settings';
 import HelpOutline from '@spectrum-icons/workflow/HelpOutline';
 
-import DataCorrelated from '@spectrum-icons/workflow/DataCorrelated';
 import { PRODUCT_NAME } from '@/lib/constants';
 
 // Types
@@ -30,8 +29,7 @@ const menuLinkClass = 'text-xl hover:cursor-pointer hover:font-bold display-inli
 const MENU_ITEMS = {
     main: [
 
-        { icon: <Search size='S' />, text: 'Search', href: '/search' },
-        { icon: <DataCorrelated size='S' />, text: 'Relationships', href: '/relationships' },
+        { icon: <Search size='S' />, text: 'Home', href: '/' },
         { icon: <Settings size='S' />, text: 'Settings', href: '/settings' },
         { icon: <HelpOutline size='S' />, text: 'Support', href: '/support' }
     ]
@@ -97,7 +95,7 @@ export default function NavigationBar() {
                 <div className="relative flex items-center justify-between h-16">
                     {/* Left side - Logo and Product Name */}
                     <div className="flex items-center">
-                        <Image 
+                        <Image
                             src="/images/squarelogo.png"
                             alt="Logo"
                             width={32}
