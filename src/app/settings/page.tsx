@@ -1,7 +1,7 @@
 'use client';
 import SettingsForm from "@/components/forms/SettingsForm";
 
-// import YoutubeEmbed from "@/components/YoutubeEmbed";
+import YoutubeEmbed from "@/components/YoutubeEmbed";
 
 
 const SettingsPage = () => {
@@ -11,7 +11,7 @@ const SettingsPage = () => {
             <div className="p-4 mt-8">
                 <div className="max-w-[640px]">
                     <h2 className="text-2xl font-bold mb-4">How to create your API keys (video coming soon) </h2>
-                    {/* <YoutubeEmbed videoId="gE00bLYFjSI" title="Settings Video" /> */}
+                    <YoutubeEmbed videoId="5s65A_JFld8" title="Settings Video" />
                 </div>
 
 
