@@ -16,7 +16,7 @@ export function useApiCache() {
 
   const getFromCache = useCallback(<T>(key: string): T | null => {
     const cacheKey = getCacheKey(key);
-    const cached = localStorage.getItem(cacheKey);
+    const cached = sessionStorage.getItem(cacheKey);
 
     if (!cached) return null;
 
@@ -24,7 +24,7 @@ export function useApiCache() {
     const now = Date.now();
 
     if (now - item.timestamp > CACHE_DURATION) {
-      localStorage.removeItem(cacheKey);
+      sessionStorage.removeItem(cacheKey);
       return null;
     }
 
@@ -37,7 +37,7 @@ export function useApiCache() {
       data,
       timestamp: Date.now(),
     };
-    localStorage.setItem(cacheKey, JSON.stringify(cacheItem));
+    sessionStorage.setItem(cacheKey, JSON.stringify(cacheItem));
   }, [getCacheKey]);
 
   const fetchCompanies = useCallback(async () => {

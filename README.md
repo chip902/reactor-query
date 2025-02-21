@@ -1,4 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Adobe Reactor API Tool
+
+This interactive tool helps you work with Adobe's Reactor API. It's built with [Next.js](https://nextjs.org) and provides a user-friendly interface for making API calls using your Adobe credentials.
+
+## 🔐 API Key Security
+
+This tool requires your Adobe API credentials to function. Here's how we handle your credentials:
+
+1. **Credential Input**: You'll need to provide:
+   - Client ID
+   - Client Secret
+   - Organization ID
+
+2. **Security Measures**:
+   - Credentials are only used for immediate API calls and are never stored outside of your browser
+   - Credentials are only used for the duration of the API call
+   - All data is transmitted securely over HTTPS
+   - Credentials are sent via the `x-api-keys` header and are Base64 encoded during transmission
+   - The `x-api-keys` header is explicitly redacted in API logging. See `middleware.ts` for details.
+   - No data persists between sessions
+
+3. **Best Practices**:
+   - Prepare your API credentials with a special read-only product profile. See the video on the [Settings](https://assistant.perpetua.digital/settings) page for more information.
+   - Rotate your API keys regularly
+   - Never share your API keys
+
+---
 
 ## Getting Started
 
@@ -20,17 +46,8 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Submit a pull request and we'll review it as soon as possible. 
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
