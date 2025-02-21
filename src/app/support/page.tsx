@@ -5,9 +5,12 @@ import { TextArea, Picker, Item, InlineAlert, Heading, Content, TextField } from
 import './style.css';
 
 const supportSubjects = [
+    'API Key Settings',
     'Search',
     'Relationships',
-    'API Key Settings',
+    'Exporting',
+    'Extension Filter',
+    'Publish History',
     'Feature Request',
     'Other'
 ];

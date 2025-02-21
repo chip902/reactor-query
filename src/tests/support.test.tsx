@@ -4,12 +4,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import SupportPage from '@/app/support/page';
-import { useApiKeys } from '@/app/hooks/useApiKeys';
-
-// Mock the API keys hook
-jest.mock('@/app/hooks/useApiKeys', () => ({
-  useApiKeys: jest.fn(),
-}));
 
 // Mock the Adobe Spectrum components
 jest.mock('@adobe/react-spectrum', () => ({
@@ -48,29 +42,12 @@ jest.mock('@adobe/react-spectrum', () => ({
 }));
 
 describe('SupportPage', () => {
-  const mockApiKeys = {
-    clientId: 'test-client-id',
-    clientSecret: 'test-client-secret',
-    orgId: 'test-org-id'
-  };
-
   beforeEach(() => {
     // Clear all mocks before each test
-    jest.clearAllMocks();
     global.fetch = jest.fn();
   });
 
-  it('shows the support form even without API keys', () => {
-    (useApiKeys as jest.Mock).mockReturnValue({ hasKeys: false, loading: false });
-    render(<SupportPage />);
-
-    expect(screen.getByText('Contact Support')).toBeInTheDocument();
-    expect(screen.getByLabelText('Subject')).toBeInTheDocument();
-    expect(screen.getByLabelText('Message')).toBeInTheDocument();
-  });
-
-  it('renders the support form when API keys are available', () => {
-    (useApiKeys as jest.Mock).mockReturnValue({ apiKeys: mockApiKeys, loading: false });
+  it('renders the support form', () => {
     render(<SupportPage />);
 
     expect(screen.getByText('Contact Support')).toBeInTheDocument();
@@ -80,7 +57,6 @@ describe('SupportPage', () => {
   });
 
   it('allows selecting different subjects', async () => {
-    (useApiKeys as jest.Mock).mockReturnValue({ apiKeys: mockApiKeys, loading: false });
     render(<SupportPage />);
 
     const subjectSelect = screen.getByLabelText('Subject');
@@ -90,7 +66,6 @@ describe('SupportPage', () => {
   });
 
   it('allows typing a message', async () => {
-    (useApiKeys as jest.Mock).mockReturnValue({ apiKeys: mockApiKeys, loading: false });
     render(<SupportPage />);
 
     const messageInput = screen.getByLabelText('Message');
@@ -100,16 +75,17 @@ describe('SupportPage', () => {
   });
 
   it('handles successful form submission', async () => {
-    (useApiKeys as jest.Mock).mockReturnValue({ apiKeys: mockApiKeys, loading: false });
     (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
 
     render(<SupportPage />);
 
     const emailInput = screen.getByLabelText('Email');
     const messageInput = screen.getByLabelText('Message');
+    const subjectSelect = screen.getByLabelText('Subject');
     
     await userEvent.type(emailInput, 'test@example.com');
     await userEvent.type(messageInput, 'Test support message');
+    await userEvent.selectOptions(subjectSelect, 'Search');
 
     const submitButton = screen.getByRole('button', { name: /send message/i });
     await userEvent.click(submitButton);
@@ -133,7 +109,6 @@ describe('SupportPage', () => {
   });
 
   it('handles failed form submission', async () => {
-    (useApiKeys as jest.Mock).mockReturnValue({ apiKeys: mockApiKeys, loading: false });
     (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Failed to send'));
 
     render(<SupportPage />);
@@ -154,7 +129,6 @@ describe('SupportPage', () => {
   });
 
   it('disables submit button while sending', async () => {
-    (useApiKeys as jest.Mock).mockReturnValue({ apiKeys: mockApiKeys, loading: false });
     // Create a promise that we won't resolve immediately
     let resolveRequest: (value: any) => void;
     const fetchPromise = new Promise((resolve) => {
@@ -177,11 +151,5 @@ describe('SupportPage', () => {
     expect(submitButton).toHaveTextContent('Sending...');
   });
 
-  it('shows loading state when API keys are loading', () => {
-    (useApiKeys as jest.Mock).mockReturnValue({ apiKeys: null, loading: true });
-    render(<SupportPage />);
 
-    // We don't show loading spinner anymore since we're using local storage
-    expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
-  });
 });

@@ -3,14 +3,14 @@ import Link from 'next/link';
 
 const SettingsAlert = () => {
     return (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
             <InlineAlert variant="info">
                 <Heading>API Keys Needed</Heading>
                 <Content>
                     You need to add your Launch API keys to use the app. Go to the {<Link className="underline" href="/settings">Settings</Link>} page to provide them.
                     <br /><br />
                     <small style={{ color: '#666' }}>
-                        Note: API keys are stored securely in your browser&apos;s session storage and will be cleared when you close the browser.
+                        Note: API keys are stored in your browser&apos;s session storage and will be cleared when you close the browser.
                     </small>
                 </Content>
             </InlineAlert>

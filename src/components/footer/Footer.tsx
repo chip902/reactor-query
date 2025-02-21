@@ -9,7 +9,7 @@ const Footer = () => {
     return (
         <footer className="mt-auto w-full bg-blue-500 py-4">
             <div className="container mx-auto text-center text-white">
-                <p>Help: support@perpetua.digital | {" "}
+                <p><Link className="underline" target='_blank' href="/support">Support</Link> |{" "}
                     <Link
                         className="underline"
                         onClick={() => event({
@@ -22,6 +22,7 @@ const Footer = () => {
                         Donate
                     </Link> |{" "}
                     <Link className="underline" target='_blank' href="/privacy">Privacy Policy</Link> |{" "}
+                    <Link className="underline" target='_blank' href="/features">Features</Link> |{" "}
                     <Link className="underline" target='_blank' href="https://www.perpetua.digital">Blog</Link>
                 </p>
             </div>

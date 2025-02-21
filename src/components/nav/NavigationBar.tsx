@@ -3,8 +3,7 @@ import React, { useState } from 'react'
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ActionButton, MenuTrigger } from '@adobe/react-spectrum';
-import ViewGrid from '@spectrum-icons/workflow/ViewGrid';
+
 import ShowMenu from '@spectrum-icons/workflow/ShowMenu';
 import Search from '@spectrum-icons/workflow/Search';
 import Settings from '@spectrum-icons/workflow/Settings';
@@ -24,7 +23,7 @@ type MenuItemProps = {
 }
 
 // Constants
-const menuLinkClass = 'text-xl hover:cursor-pointer hover:font-bold display-inline'
+const menuLinkClass = 'text-gray-500 hover:text-blue-600 font-medium px-3 py-2 rounded-md text-sm transition-colors duration-150 ease-in-out'
 
 const MENU_ITEMS = {
     main: [
@@ -71,16 +70,11 @@ const MobileMenuLayout = ({ children, onClose }: { children: React.ReactNode, on
 
 const MainMenu = () => {
     return (
-        <MenuTrigger>
-            <ActionButton isQuiet UNSAFE_className='hover:cursor-pointer'>
-                <ViewGrid aria-label="ViewGrid" size='L' />
-            </ActionButton>
-            <ul style={{ width: '250px', border: '1px solid gray' }}>
-                {MENU_ITEMS.main.map((item, index) => (
-                    <MenuItem key={index} icon={item.icon} text={item.text} href={item.href} className='p-4 min-w-full' />
-                ))}
-            </ul>
-        </MenuTrigger>
+        <ul className="flex space-x-4">
+            {MENU_ITEMS.main.map((item, index) => (
+                <MenuItem key={index} icon={item.icon} text={item.text} href={item.href} />
+            ))}
+        </ul>
     )
 }
 
