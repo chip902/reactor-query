@@ -36,6 +36,7 @@ import LibraryExport from '@/components/export/LibraryExport';
 import DataElementSearchResponseRow from '@/components/search/DataElementSearchResponseRow';
 import RuleSearchResponseRow from '@/components/search/RuleSearchResponseRow';
 import ExtensionSearchResponseRow from '@/components/search/ExtensionSearchResponseRow';
+import Relationships from '@/components/relationships/Relationships';
 
 // Icons
 import Download from '@spectrum-icons/workflow/Download';
@@ -43,6 +44,8 @@ import Filter from '@spectrum-icons/workflow/Filter';
 import Search from '@spectrum-icons/workflow/Search';
 import Calendar from '@spectrum-icons/workflow/Calendar';
 import Export from '@spectrum-icons/workflow/Export';
+import DataCorrelated from '@spectrum-icons/workflow/DataCorrelated';
+// import Relationships from '../relationships/page';
 
 type SearchApiResponse =
   | DataElementSearchResponseItem[]
@@ -284,6 +287,15 @@ const SearchContent = () => {
         <LibraryExport
           selectedCompany={selectedCompany}
           selectedProperty={selectedProperty}
+        />
+    },
+    {
+      id: 5, icon: <DataCorrelated />, name: 'Relationships',
+      children:
+        <Relationships
+          selectedCompany={selectedCompany}
+          selectedProperty={selectedProperty}
+          apiKeys={apiKeys}
         />
     }
   ]

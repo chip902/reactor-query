@@ -116,7 +116,6 @@ export async function POST(request: Request) {
 
         // Parse the response
         const data = await response.json();
-        // console.log(JSON.stringify(data, null, 2));
 
         const { total_hits } = data.meta;
         if (total_hits > 0) {

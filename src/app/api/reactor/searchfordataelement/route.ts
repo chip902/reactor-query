@@ -110,6 +110,7 @@ export async function POST(request: Request) {
             totalHits += data.meta.total_hits;
         });
 
+
         if (totalHits > 0) {
             async function processApiResponse(response: SearchApiResponse): Promise<SearchResponseItem[]> {
                 const processedData = [];
@@ -127,7 +128,7 @@ export async function POST(request: Request) {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'x-api-keys': JSON.stringify(credentials),
+                                    'x-api-keys': Buffer.from(JSON.stringify(credentials)).toString('base64'),
                                 },
                                 body: JSON.stringify({ ruleComponentId: item.id }),
                             });

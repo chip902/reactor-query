@@ -1,9 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { useApiCache } from '@/app/hooks/useApiCache';
-import { useApiKeys } from '@/app/hooks/useApiKeys';
 import { createApiHeaders } from '@/lib/apiUtils';
-import WithApiKeys from '@/components/wrappers/WithApiKeys';
 import { Flex, Item, Text, ListView, Divider } from "@adobe/react-spectrum";
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
@@ -11,8 +8,6 @@ import { TruncatedReactorAPIResponseItem } from '@/lib/types';
 import { useAnalytics } from '@/app/hooks/useAnalytics';
 
 // Components
-import CompanyPicker from '@/components/search/CompanyPicker';
-import PropertyPicker from '@/components/search/PropertyPicker';
 import NoResultsMessage from '@/components/relationships/NoResultsMessage';
 import SelectARule from '@/components/relationships/SelectARule';
 import SelectAProperty from '@/components/relationships/SelectAProperty';
@@ -64,16 +59,8 @@ const formatDelegateDescriptorId = (delegate_descriptor_id: string) => {
     return typeVar;
 };
 
-const RelationshipsContent = () => {
-    const { apiKeys } = useApiKeys();
+const Relationships = ({ selectedCompany, selectedProperty, apiKeys }: { selectedCompany: { id: string; name: string }, selectedProperty: { id: string; name: string }, apiKeys: { clientId: string; clientSecret: string; orgId: string; } | null }) => {
     const { event } = useAnalytics();
-    const { fetchCompanies, fetchProperties } = useApiCache();
-    const [companies, setCompanies] = useState<TruncatedReactorAPIResponseItem[]>([]);
-    const [selectedCompany, setSelectedCompany] = useState<{ id: string; name: string }>({ id: '', name: '' });
-    const [properties, setProperties] = useState<TruncatedReactorAPIResponseItem[]>([]);
-    const [selectedProperty, setSelectedProperty] = useState<{ id: string; name: string }>({ id: '', name: '' });
-    const [propertiesLoading, setPropertiesLoading] = useState(false);
-    const [companiesLoading, setCompaniesLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [rules, setRules] = useState<TruncatedReactorAPIResponseItem[]>([]);
     const [rulesLoading, setRulesLoading] = useState(false);
@@ -88,55 +75,6 @@ const RelationshipsContent = () => {
     const [ruleSearchResultsLoading, setRuleSearchResultsLoading] = useState(false);
     const [arrowColor1, setArrowColor1] = useState<'positive' | 'negative' | 'informative'>('informative');
     const [arrowColor2, setArrowColor2] = useState<'positive' | 'negative' | 'informative'>('informative');
-
-    // pickers
-    const loadCompanies = useCallback(async () => {
-        setCompaniesLoading(true);
-        try {
-            const { data } = await fetchCompanies();
-            setCompanies(data);
-            // If there's exactly one company, automatically select it
-            if (data.length === 1) {
-                const company = data[0];
-                setSelectedCompany({ id: company.id, name: company.attributes.name });
-            }
-        } catch (error) {
-            setError('Failed to fetch companies');
-            console.error(error);
-        } finally {
-            setCompaniesLoading(false);
-        }
-    }, [fetchCompanies]);
-
-    const loadProperties = useCallback(async () => {
-        if (!selectedCompany.id) return;
-
-        setPropertiesLoading(true);
-        try {
-            const { data } = await fetchProperties(selectedCompany.id);
-            setProperties(data);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-            setError('Failed to fetch properties');
-        } finally {
-            setPropertiesLoading(false);
-        }
-    }, [selectedCompany.id, fetchProperties]);
-
-    useEffect(() => {
-        loadCompanies();
-    }, [loadCompanies]);
-
-    useEffect(() => {
-        if (selectedCompany.id) {
-            loadProperties();
-        } else {
-            setProperties([]);
-            setSelectedProperty({ id: '', name: '' });
-        }
-    }, [selectedCompany, loadProperties]);
-
-    // is org name set
 
 
 
@@ -307,22 +245,6 @@ const RelationshipsContent = () => {
         <Flex direction="column" gap="size-200" minHeight="100vh">
             {error && <ErrorMessage message={error} />}
             <Flex direction="column" gap="size-100">
-                <h1 className="text-2xl font-bold mb-6">Relationships</h1>
-                <Flex gap="size-150" wrap>
-                    <CompanyPicker
-                        companies={companies}
-                        companiesLoading={companiesLoading}
-                        selectedCompany={selectedCompany}
-                        setSelectedCompany={setSelectedCompany}
-                    />
-                    <PropertyPicker
-                        selectedCompany={selectedCompany}
-                        selectedProperty={selectedProperty}
-                        properties={properties}
-                        propertiesLoading={propertiesLoading}
-                        setSelectedProperty={setSelectedProperty}
-                    />
-                </Flex>
                 <Flex direction="column" gap="size-100" marginBottom="size-200" marginTop='size-200'>
                     <h3 className='font-bold' style={{ color: '#147af3' }}>Find the data elements that are used in a rule</h3>
                     <Text UNSAFE_className='mb-3' UNSAFE_style={{ color: 'gray', fontWeight: 'light', fontStyle: 'italic' }}>Where a rule uses the _satellite.getVar or %syntax% for data elements</Text>
@@ -462,14 +384,6 @@ const RelationshipsContent = () => {
                 </Flex>
             </Flex>
         </Flex>
-    );
-};
-
-const Relationships = () => {
-    return (
-        <WithApiKeys>
-            <RelationshipsContent />
-        </WithApiKeys>
     );
 };
 
