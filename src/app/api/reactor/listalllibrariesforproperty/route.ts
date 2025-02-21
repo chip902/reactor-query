@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
             }
             const allLibraries = [];
             let libraries: ReactorAPIResponse = await reactor.listLibrariesForProperty(postData.propertyId, { 'page[size]': 100 })
-            console.log(JSON.stringify(libraries))
             let { next_page } = libraries.meta.pagination;
             allLibraries.push(...libraries.data)
 

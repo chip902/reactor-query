@@ -4,19 +4,21 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { CalendarItem } from '@/lib/types';
 import { useAsyncList } from '@adobe/react-spectrum';
 import { format } from 'date-fns';
-import { useApiKeys } from '@/app/hooks/useApiKeys';
 
 // Components
 import Link from 'next/link';
 import { MonthViewCalendar } from '@/components/publishhistory/MonthViewCalendar';
 import { Flex, Item, Text, ListView, View } from "@adobe/react-spectrum";
 
-const PublishHistory = ({ selectedCompany, selectedProperty }: { selectedCompany: { id: string; name: string }, selectedProperty: { id: string; name: string } }) => {
-    const { apiKeys } = useApiKeys();
+const PublishHistory = ({ selectedCompany, selectedProperty, apiKeys }: {
+    selectedCompany: { id: string; name: string },
+    selectedProperty: { id: string; name: string },
+    apiKeys: { clientId: string; clientSecret: string; orgId: string; } | null
+}) => {
     const [nextPage, setNextPage] = useState(0);
     const libraries = useAsyncList<CalendarItem>({
         async load({ signal, cursor }) {
-            if (!selectedProperty.id) {
+            if (!selectedProperty.id || !apiKeys) {
                 return {
                     items: [],
                     cursor: null
@@ -25,7 +27,6 @@ const PublishHistory = ({ selectedCompany, selectedProperty }: { selectedCompany
 
             try {
                 const pageNumber = cursor ? parseInt(cursor) : 1;
-                if (!apiKeys) throw new Error('No API keys available');
 
                 const response = await fetch('/api/reactor/listlibrariesforproperty', {
                     method: 'POST',
@@ -75,8 +76,6 @@ const PublishHistory = ({ selectedCompany, selectedProperty }: { selectedCompany
     });
     const [currentDate, setCurrentDate] = useState(new Date());
 
-
-
     // Reload libraries when property changes
     useEffect(() => {
         if (selectedProperty.id) {
@@ -104,9 +103,12 @@ const PublishHistory = ({ selectedCompany, selectedProperty }: { selectedCompany
 
     return (
         <Flex direction="column" gap="size-100" marginBottom="size-200" marginTop='size-200'>
-            {libraries.items.length === 0 && libraries.isLoading && <LoadingSpinner />}
-            {libraries.items.length === 0 && !libraries.isLoading && (
+            {(!apiKeys || libraries.isLoading) && <LoadingSpinner />}
+            {apiKeys && !libraries.isLoading && !selectedProperty.id && (
                 <p>Select a property to view its publish history.</p>
+            )}
+            {apiKeys && !libraries.isLoading && selectedProperty.id && libraries.items.length === 0 && (
+                <p>No publish history found for this property.</p>
             )}
             {libraries.items.length > 0 && (
                 <Flex direction="column" gap="size-200">
@@ -120,7 +122,7 @@ const PublishHistory = ({ selectedCompany, selectedProperty }: { selectedCompany
                                 <Link
                                     target="_blank"
                                     className="text-blue-500 underline hover:text-blue-800 font-regular"
-                                    href={`https://experience.adobe.com/#/@${apiKeys?.organizationName}/sname:prod/data-collection/tags/companies/${selectedCompany.id}/properties/${selectedProperty.id}/publishing/${libraries.items[0].id}`}
+                                    href={`https://experience.adobe.com/#/@organizationName/sname:prod/data-collection/tags/companies/${selectedCompany.id}/properties/${selectedProperty.id}/publishing/${libraries.items[0].id}`}
                                 >
                                     {" "}{libraries.items[0].attributes.name}
                                 </Link>
@@ -159,7 +161,7 @@ const PublishHistory = ({ selectedCompany, selectedProperty }: { selectedCompany
                                         return (
                                             <Item key={item.id} textValue={item.attributes.name}>
                                                 <Text justifySelf={'start'}>
-                                                    <Link target="_blank" className="text-blue-500 underline hover:text-blue-800" href={`https://experience.adobe.com/#/@${apiKeys?.organizationName}/sname:prod/data-collection/tags/companies/${selectedCompany.id}/properties/${selectedProperty.id}/publishing/${item.id}`}>
+                                                    <Link target="_blank" className="text-blue-500 underline hover:text-blue-800" href={`https://experience.adobe.com/#/@organizationName/sname:prod/data-collection/tags/companies/${selectedCompany.id}/properties/${selectedProperty.id}/publishing/${item.id}`}>
                                                         {item.attributes.name.slice(0, 35)}{item.attributes.name.length > 35 && '...'}
                                                     </Link>
                                                 </Text>

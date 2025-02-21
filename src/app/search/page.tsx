@@ -277,7 +277,8 @@ const SearchContent = () => {
       children:
         <PublishHistory
           selectedCompany={selectedCompany}
-          selectedProperty={selectedProperty} />
+          selectedProperty={selectedProperty}
+          apiKeys={apiKeys} />
     },
     {
       id: 4, icon: <Export />, name: 'Export',

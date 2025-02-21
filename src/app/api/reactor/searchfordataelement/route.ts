@@ -154,7 +154,6 @@ export async function POST(request: Request) {
 
             return NextResponse.json(newData, { status: 200 });
         }
-        console.log(allData);
         // Return the results to the client
         return NextResponse.json({ data: allData, meta: { total_hits: totalHits } }, { status: 200 });
 
