@@ -23,7 +23,13 @@ export async function POST(request: Request) {
         if (!apiKeysHeader) {
             return NextResponse.json({ error: 'Missing API keys header' }, { status: 401 });
         }
-        credentials = JSON.parse(apiKeysHeader);
+        try {
+            const decodedKeys = Buffer.from(apiKeysHeader, 'base64').toString();
+            credentials = JSON.parse(decodedKeys);
+            //eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return NextResponse.json({ error: 'Invalid API keys format' }, { status: 400 });
+        }
     } catch (error) {
         console.error('Error parsing API keys:', error);
         return NextResponse.json({ error: 'Invalid API keys format' }, { status: 400 });

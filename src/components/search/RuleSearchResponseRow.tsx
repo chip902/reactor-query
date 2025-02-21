@@ -8,6 +8,7 @@ import LoadingSpinner from '../LoadingSpinner';
 import { Divider } from '@adobe/react-spectrum';
 import formatAttributesWithParsedSettings from '@/lib/formatAttributesWithParsedSettings';
 import { useApiKeys } from '@/app/hooks/useApiKeys';
+import { createApiHeaders } from '@/lib/apiUtils';
 
 interface ResultItemProps {
     item: RuleSearchResponseItem;
@@ -156,14 +157,7 @@ const RuleSearchResponseRow = ({
             
             const response = await fetch('/api/reactor/listcomponentsforrule', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-keys': JSON.stringify({
-                        clientId: apiKeys.clientId,
-                        clientSecret: apiKeys.clientSecret,
-                        orgId: apiKeys.orgId
-                    })
-                },
+                headers: createApiHeaders(apiKeys),
                 body: JSON.stringify({ ruleId }),
             });
             const data = await response.json();

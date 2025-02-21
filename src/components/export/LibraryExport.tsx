@@ -5,6 +5,7 @@ import Calendar from '@spectrum-icons/workflow/Calendar';
 import { useAnalytics } from '@/app/hooks/useAnalytics';
 import { TruncatedReactorAPIResponseItem } from '@/lib/types';
 import { useApiKeys } from '@/app/hooks/useApiKeys';
+import { createApiHeaders } from '@/lib/apiUtils';
 import { useState } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,14 +65,7 @@ const LibraryExport = ({ selectedCompany, selectedProperty }: { selectedCompany:
 
                             const response = await fetch('/api/reactor/listdataelements', {
                                 method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-api-keys': JSON.stringify({
-                                        clientId: apiKeys.clientId,
-                                        clientSecret: apiKeys.clientSecret,
-                                        orgId: apiKeys.orgId
-                                    })
-                                },
+                                headers: createApiHeaders(apiKeys),
                                 body: JSON.stringify({
                                     propertyId: selectedProperty.id
                                 })
@@ -106,14 +100,7 @@ const LibraryExport = ({ selectedCompany, selectedProperty }: { selectedCompany:
 
                             const response = await fetch('/api/reactor/listrules', {
                                 method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-api-keys': JSON.stringify({
-                                        clientId: apiKeys.clientId,
-                                        clientSecret: apiKeys.clientSecret,
-                                        orgId: apiKeys.orgId
-                                    })
-                                },
+                                headers: createApiHeaders(apiKeys),
                                 body: JSON.stringify({
                                     propertyId: selectedProperty.id
                                 })
@@ -149,14 +136,7 @@ const LibraryExport = ({ selectedCompany, selectedProperty }: { selectedCompany:
 
                             const response = await fetch('/api/reactor/listalllibrariesforproperty', {
                                 method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-api-keys': JSON.stringify({
-                                        clientId: apiKeys.clientId,
-                                        clientSecret: apiKeys.clientSecret,
-                                        orgId: apiKeys.orgId
-                                    })
-                                },
+                                headers: createApiHeaders(apiKeys),
                                 body: JSON.stringify({
                                     propertyId: selectedProperty.id
                                 })

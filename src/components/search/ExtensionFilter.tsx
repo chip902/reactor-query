@@ -22,6 +22,7 @@ interface ExtensionFilterProps {
 }
 
 const ExtensionFilter = ({ extensions, extensionsLoading, selectedExtension, setSelectedExtension, selectedProperty }: ExtensionFilterProps) => {
+    console.log(selectedExtension)
     return (
         <Flex direction="column" gap="size-100" marginBottom="size-200" marginTop='size-200'>
             <Text>Select an Extension to view all the rules and data elements that use it.</Text>

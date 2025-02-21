@@ -15,18 +15,15 @@ const logError = (message: string, error?: unknown) => {
     }
 };
 
-// Simple encryption/decryption using AES
+// Simple encryption/decryption using Base64
 const encrypt = (text: string): string => {
-    // Use a combination of base64 and reversible transformation
-    // This isn't true encryption but adds a layer of obfuscation
-    const encoded = btoa(text);
-    return encoded.split('').reverse().join('');
+    // Use Buffer for consistent Base64 encoding across client/server
+    return Buffer.from(text).toString('base64');
 };
 
 const decrypt = (text: string): string => {
-    // Reverse the transformation
-    const reversed = text.split('').reverse().join('');
-    return atob(reversed);
+    // Decode Base64 using Buffer
+    return Buffer.from(text, 'base64').toString();
 };
 
 export const saveApiKeys = (settings: UserSettings): void => {

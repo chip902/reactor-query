@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useApiKeys } from './useApiKeys';
+import { createApiHeaders } from '@/lib/apiUtils';
 import { TruncatedReactorAPIResponseItem } from '@/lib/types';
 
 const CACHE_DURATION = 1000 * 60 * 30; // 30 minutes
@@ -56,10 +57,7 @@ export function useApiCache() {
       }
       const response = await fetch('/api/reactor/listcompanies', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-keys': JSON.stringify(apiKeys),
-        },
+        headers: createApiHeaders(apiKeys),
       });
 
       const result: TruncatedReactorAPIResponseItem[] = await response.json();
@@ -93,10 +91,7 @@ export function useApiCache() {
       }
       const response = await fetch('/api/reactor/listproperties', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-keys': JSON.stringify(apiKeys),
-        },
+        headers: createApiHeaders(apiKeys),
         body: JSON.stringify({ companyId }),
       });
 
@@ -131,10 +126,7 @@ export function useApiCache() {
       }
       const response = await fetch('/api/reactor/listenvironments', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-keys': JSON.stringify(apiKeys),
-        },
+        headers: createApiHeaders(apiKeys),
         body: JSON.stringify({ propertyId }),
       });
 
@@ -169,10 +161,7 @@ export function useApiCache() {
       }
       const response = await fetch('/api/reactor/listextensions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-keys': JSON.stringify(apiKeys),
-        },
+        headers: createApiHeaders(apiKeys),
         body: JSON.stringify({ propertyId }),
       });
 
@@ -207,10 +196,7 @@ export function useApiCache() {
       }
       const response = await fetch('/api/reactor/listlibrariesforproperty', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-keys': JSON.stringify(apiKeys),
-        },
+        headers: createApiHeaders(apiKeys),
         body: JSON.stringify({ propertyId, publishedOnly }),
       });
 

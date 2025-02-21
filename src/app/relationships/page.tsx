@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useApiCache } from '@/app/hooks/useApiCache';
 import { useApiKeys } from '@/app/hooks/useApiKeys';
+import { createApiHeaders } from '@/lib/apiUtils';
 import WithApiKeys from '@/components/wrappers/WithApiKeys';
 import { Flex, Item, Text, ListView, Divider } from "@adobe/react-spectrum";
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -145,10 +146,7 @@ const RelationshipsContent = () => {
             setRuleComponentsLoading(true);
             const response = await fetch('/api/reactor/listcomponentsforrule', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-keys': JSON.stringify(apiKeys),
-                },
+                headers: createApiHeaders(apiKeys),
                 body: JSON.stringify({ ruleId }),
             });
 
@@ -170,10 +168,7 @@ const RelationshipsContent = () => {
             setRulesLoading(true);
             const response = await fetch('/api/reactor/listrules', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-keys': JSON.stringify(apiKeys),
-                },
+                headers: createApiHeaders(apiKeys),
                 body: JSON.stringify({ propertyId }),
             });
 
@@ -195,10 +190,7 @@ const RelationshipsContent = () => {
             setDataElementsLoading(true);
             const response = await fetch('/api/reactor/listdataelements', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-keys': JSON.stringify(apiKeys),
-                },
+                headers: createApiHeaders(apiKeys),
                 body: JSON.stringify({ propertyId }),
             });
 
@@ -256,10 +248,7 @@ const RelationshipsContent = () => {
         try {
             const response = await fetch('/api/reactor/searchfordataelement', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-keys': JSON.stringify(apiKeys),
-                },
+                headers: createApiHeaders(apiKeys),
                 body: JSON.stringify({
                     launchPropertyId: selectedProperty.id,
                     dataElementName: selectedDataElement?.name,

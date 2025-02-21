@@ -4,6 +4,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { CalendarItem } from '@/lib/types';
 import { useAsyncList } from '@adobe/react-spectrum';
 import { format } from 'date-fns';
+import { createApiHeaders } from '@/lib/apiUtils';
 
 // Components
 import Link from 'next/link';
@@ -30,14 +31,7 @@ const PublishHistory = ({ selectedCompany, selectedProperty, apiKeys }: {
 
                 const response = await fetch('/api/reactor/listlibrariesforproperty', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-keys': JSON.stringify({
-                            clientId: apiKeys.clientId,
-                            clientSecret: apiKeys.clientSecret,
-                            orgId: apiKeys.orgId
-                        })
-                    },
+                    headers: createApiHeaders(apiKeys),
                     body: JSON.stringify({
                         propertyId: selectedProperty.id,
                         pageNumber,

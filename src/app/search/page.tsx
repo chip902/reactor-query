@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useApiCache } from '@/app/hooks/useApiCache';
 import { useApiKeys } from '@/app/hooks/useApiKeys';
+import { createApiHeaders } from '@/lib/apiUtils';
 import { useAnalytics } from '@/app/hooks/useAnalytics';
 import WithApiKeys from '@/components/wrappers/WithApiKeys';
 import {
@@ -139,10 +140,7 @@ const SearchContent = () => {
     try {
       const response = await fetch('/api/reactor/search', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-keys': JSON.stringify(apiKeys),
-        },
+        headers: createApiHeaders(apiKeys),
         body: JSON.stringify({
           launchPropertyId: selectedProperty.id,
           searchValue,
@@ -293,6 +291,7 @@ const SearchContent = () => {
   useEffect(() => {
     setSearchValue('')
     setResults(null)
+    setSelectedExtension({ id: '', name: '', display_name: '' })
   }, [tabId]);
 
   return (

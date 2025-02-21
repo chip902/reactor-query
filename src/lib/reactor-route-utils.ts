@@ -41,6 +41,21 @@ export async function createReactorRoute<T, P = NoPostData>(
     }
 
     try {
+        // Decode Base64 API keys from header
+        const apiKeysHeader = request.headers.get('x-api-keys');
+        if (!apiKeysHeader) {
+            return NextResponse.json({ error: 'Missing API keys header' }, { status: 401 });
+        }
+
+        let credentials: UserCredentials;
+        try {
+            const decodedKeys = Buffer.from(apiKeysHeader, 'base64').toString();
+            credentials = JSON.parse(decodedKeys);
+            //eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return NextResponse.json({ error: 'Invalid API keys format' }, { status: 400 });
+        }
+
         let postData: P | undefined;
         const contentType = request.headers.get('content-type');
 
@@ -59,17 +74,7 @@ export async function createReactorRoute<T, P = NoPostData>(
             }
         }
 
-        let clientId, clientSecret, orgId;
-        try {
-            const apiKeysHeader = request.headers.get('x-api-keys');
-            if (!apiKeysHeader) {
-                return NextResponse.json({ error: 'Missing API keys header' }, { status: 401 });
-            }
-            ({ clientId, clientSecret, orgId } = JSON.parse(apiKeysHeader));
-        } catch (error) {
-            console.error('Error parsing API keys:', error);
-            return NextResponse.json({ error: 'Invalid API keys format' }, { status: 400 });
-        }
+        const { clientId, clientSecret, orgId } = credentials;
 
         if (!clientId || !clientSecret || !orgId) {
             return NextResponse.json({ error: 'Missing API keys' }, { status: 401 });
