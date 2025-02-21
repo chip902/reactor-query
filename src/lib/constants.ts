@@ -1,6 +1,8 @@
 const PRODUCT_NAME = 'Perpetua Digital Launch Assistant';
 
-const RESOURCE_TYPES =  [
+
+// Im going to us this in the future for a callback builder
+const RESOURCE_TYPES = [
     'property',
     'extension',
     'data_element',

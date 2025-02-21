@@ -1,3 +1,5 @@
+// This does the yellow highlighting of the search query in your search results
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const highlightSearchInJson = (json: any, searchValue: string): string => {
     if (!searchValue) return JSON.stringify(json, null, 2);

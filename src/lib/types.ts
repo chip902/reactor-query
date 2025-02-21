@@ -1,3 +1,4 @@
+// there are probably a lot of leftover types here
 export interface User {
   uid: string;
   email: string;

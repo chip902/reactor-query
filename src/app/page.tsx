@@ -5,15 +5,7 @@ import { useApiKeys } from '@/app/hooks/useApiKeys';
 import { createApiHeaders } from '@/lib/apiUtils';
 import { useAnalytics } from '@/app/hooks/useAnalytics';
 import WithApiKeys from '@/components/wrappers/WithApiKeys';
-import {
-    Button,
-    Flex,
-    Item,
-    Tabs,
-    TabList,
-    TabPanels,
-    Text,
-} from "@adobe/react-spectrum";
+import { Button, Flex, Item, Tabs, TabList, TabPanels, Text } from "@adobe/react-spectrum";
 import type { Key } from '@adobe/react-spectrum';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import {
@@ -53,14 +45,20 @@ type SearchApiResponse =
 
 const MainContent = () => {
     const { apiKeys } = useApiKeys();
+    // GA Event
     const { event } = useAnalytics();
+    // API cache
     const { fetchCompanies, fetchProperties, fetchExtensions } = useApiCache();
+
+    // Picker states
     const [companies, setCompanies] = useState<TruncatedReactorAPIResponseItem[]>([]);
     const [selectedCompany, setSelectedCompany] = useState<{ id: string; name: string }>({ id: '', name: '' });
     const [properties, setProperties] = useState<TruncatedReactorAPIResponseItem[]>([]);
     const [selectedProperty, setSelectedProperty] = useState<{ id: string; name: string }>({ id: '', name: '' });
     const [propertiesLoading, setPropertiesLoading] = useState(false);
     const [companiesLoading, setCompaniesLoading] = useState(true);
+
+    // Search state
     const [searchValue, setSearchValue] = useState('');
     const [lastSearchedValue, setLastSearchedValue] = useState('');
     const [lastSearchedCompany, setLastSearchedCompany] = useState<{ id: string; name: string }>({ id: '', name: '' });
@@ -77,12 +75,18 @@ const MainContent = () => {
     const [ruleResults, setRuleResults] = useState<RuleSearchResponseItem[]>([]);
     const [dataElementResults, setDataElementResults] = useState<DataElementSearchResponseItem[]>([]);
     const [extensionResults, setExtensionResults] = useState<ExtensionSearchResponseItem[]>([]);
+
+    // Extension Filter
     const [extensions, setExtensions] = useState<TruncatedReactorAPIResponseItem[]>([]);
     const [extensionsLoading, setExtensionsLoading] = useState(false);
     const [selectedExtension, setSelectedExtension] = useState<{ id: string; name: string, display_name: string }>({ id: '', name: '', display_name: '' });
     const [lastSearchType, setLastSearchType] = useState<number>(1);
+
+    // Tab Navigation
     type Tab = typeof tabs[0];
     const [tabId, setTabId] = useState<Key>(1);
+
+    // Loading companies and properties
     const loadCompanies = useCallback(async () => {
         setCompaniesLoading(true);
         try {
@@ -116,10 +120,12 @@ const MainContent = () => {
         }
     }, [selectedCompany.id, fetchProperties]);
 
+    // Load companies on mount
     useEffect(() => {
         loadCompanies();
     }, [loadCompanies]);
 
+    // Load properties when a company is selected
     useEffect(() => {
         if (selectedCompany.id) {
             loadProperties();
@@ -130,7 +136,7 @@ const MainContent = () => {
     }, [selectedCompany, loadProperties]);
 
 
-
+    // Search submit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -148,7 +154,7 @@ const MainContent = () => {
                     searchValue,
                     includeRevisionHistory,
                     includeDeletedItems,
-                    tabId
+                    tabId // text search or extension search, I would like to do this differently
                 }),
             });
 
@@ -169,6 +175,8 @@ const MainContent = () => {
         }
     };
 
+    // csv export of search results
+    // I should probably move this function
     const handleExport = async () => {
         if (!results?.data) return;
 
@@ -212,6 +220,8 @@ const MainContent = () => {
         }
     };
 
+    // load the extensions when a property is selected
+    //  this happens even if you dont have that tab selected
     const loadExtensions = useCallback(async () => {
         if (!selectedProperty.id) return;
 
@@ -248,6 +258,8 @@ const MainContent = () => {
         }
     }, [selectedExtension]);
 
+
+    // THE TAB NAVIGATION
     const tabs = [
         {
             id: 1, icon: <Search />, name: 'Text Search',
@@ -299,6 +311,8 @@ const MainContent = () => {
         }
     ]
 
+    // Reset state when tab changes
+    // this clears search results etc
     useEffect(() => {
         setSearchValue('')
         setResults(null)

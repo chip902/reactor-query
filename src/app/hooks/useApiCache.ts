@@ -108,41 +108,6 @@ export function useApiCache() {
     }
   }, [apiKeys, isLoading, getFromCache, setInCache]);
 
-  const fetchEnvironments = useCallback(async (propertyId: string) => {
-    // Try to get from cache first
-    const cacheKey = `environments_${propertyId}`;
-    const cachedEnvironments = getFromCache<TruncatedReactorAPIResponseItem[]>(cacheKey);
-    if (cachedEnvironments) {
-      return { data: cachedEnvironments, fromCache: true };
-    }
-
-    // If not in cache or expired, fetch from API
-    try {
-      if (isLoading) {
-        return { data: [], fromCache: false };
-      }
-      if (!apiKeys) {
-        throw new Error('API keys not found');
-      }
-      const response = await fetch('/api/reactor/listenvironments', {
-        method: 'POST',
-        headers: createApiHeaders(apiKeys),
-        body: JSON.stringify({ propertyId }),
-      });
-
-      const result: TruncatedReactorAPIResponseItem[] = await response.json();
-
-      if (response.ok) {
-        setInCache(cacheKey, result);
-        return { data: result, fromCache: false };
-      }
-      throw new Error(`Failed to fetch environments: ${JSON.stringify(result)}`);
-    } catch (error) {
-      console.error('Failed to fetch environments:', error);
-      throw error;
-    }
-  }, [apiKeys, isLoading, getFromCache, setInCache]);
-
   const fetchExtensions = useCallback(async (propertyId: string) => {
     // Try to get from cache first
     const cacheKey = `extensions_${propertyId}`;
@@ -217,10 +182,10 @@ export function useApiCache() {
 
     const prefix = `cobramist_`;
 
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
       if (key?.startsWith(prefix)) {
-        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
       }
     }
   }, []);
@@ -228,7 +193,6 @@ export function useApiCache() {
   return {
     fetchCompanies,
     fetchProperties,
-    fetchEnvironments,
     clearCache,
     fetchExtensions,
     fetchLibraries
