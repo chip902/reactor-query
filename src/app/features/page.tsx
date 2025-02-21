@@ -80,10 +80,10 @@ const Features = () => {
             <div className="py-12 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-8">Watch The Demo</h2>
+                        <h2 className="text-3xl font-bold text-gray-900 mb-8">Watch The Demo (coming soon!)</h2>
                         <div className="max-w-3xl mx-auto rounded-lg overflow-hidden shadow-lg">
                             <div className="relative" style={{ paddingBottom: '56.25%' }}>
-                                <iframe
+                                {/* <iframe
                                     className="absolute top-0 left-0 w-full h-full"
                                     src="https://www.youtube.com/embed/F2cjJTOLvSg?si=wPjsapV80x-0I2Mc"
                                     title="YouTube video player"
@@ -91,7 +91,7 @@ const Features = () => {
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerPolicy="strict-origin-when-cross-origin"
                                     allowFullScreen
-                                ></iframe>
+                                ></iframe> */}
                             </div>
                         </div>
                     </div>
