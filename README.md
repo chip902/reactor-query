@@ -46,5 +46,4 @@ For example:
 
 ## Contributing
 
-Submit a pull request and we'll review it as soon as possible. 
-
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
