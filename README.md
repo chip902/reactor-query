@@ -3,7 +3,8 @@
 This interactive tool helps you work with [Adobe's Reactor API](https://developer.adobe.com/experience-platform-apis/references/reactor/). It's built with [Next.js](https://nextjs.org) and hosted via Vercel. It provides a user-friendly interface for making API calls using your Adobe Launch API credentials. No user data or Launch Property data is stored in a database or on the server.
 
 ## Architecture
-![Architecture Diagram](/architecture.png)
+![Architecture Diagram](/public/images/architecture.png)
+[Draw.io Diagram Link](https://drive.google.com/file/d/16ZAGvFH4pYcptr5295Mp9KG376mWRabb/view?usp=sharing)
 
 ### Front end
 The front end is built with Next.js and React. The styles are a mixture of [Tailwind CSS](https://tailwindcss.com/) and [Adobe React Spectrum](https://react-spectrum.adobe.com/react-spectrum/getting-started.html).
