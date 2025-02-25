@@ -14,6 +14,8 @@ The back end is built with [Vercel](https://vercel.com) and [Next.js](https://ne
 `Assistant` is a subdomain of `perpetua.digital` which is hosted on Squarespace. 
 I would like to transfer this to Vercel at some point. 
 
+**There is no database storage of user data, nor should there be. The goal of this tool is to be a front end for interacting with the Launch API.**
+
 ### Building & Deployment
 The project will build and deploy immediately on Vercel whenever the `main` branch is updated.
 
