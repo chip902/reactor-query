@@ -17,7 +17,7 @@ I would like to transfer this to Vercel at some point.
 ### Building & Deployment
 The project will build and deploy immediately on Vercel whenever the `main` branch is updated.
 
-## 🔐 User's API Keys
+## 🔐 API Keys
 
 Using this app in development or in production requires Adobe Launch API credentials to function. 
 To setup a developer project in Adobe Developer Console, [see the video here](https://www.youtube.com/watch?v=5s65A_JFld8).
