@@ -1,10 +1,26 @@
 # The Perpetua Digital Launch Assistant
 
-This interactive tool helps you work with Adobe's Reactor API. It's built with [Next.js](https://nextjs.org) and hosted via Vercel. It provides a user-friendly interface for making API calls using your Adobe Launch API credentials. No user data or Launch Property data is stored in a database or on the server.
+This interactive tool helps you work with [Adobe's Reactor API](https://developer.adobe.com/experience-platform-apis/references/reactor/). It's built with [Next.js](https://nextjs.org) and hosted via Vercel. It provides a user-friendly interface for making API calls using your Adobe Launch API credentials. No user data or Launch Property data is stored in a database or on the server.
 
-## 🔐 API Key Security
+## Architecture
+![Architecture Diagram](/architecture.png)
 
-Using this app in development or in production requires Adobe Launch API credentials to function. Here's how we handle your credentials:
+### Front end
+The front end is built with Next.js and React. The styles are a mixture of [Tailwind CSS](https://tailwindcss.com/) and [Adobe React Spectrum](https://react-spectrum.adobe.com/react-spectrum/getting-started.html).
+
+### Back end
+The back end is built with [Vercel](https://vercel.com) and [Next.js](https://nextjs.org).
+`Assistant` is a subdomain of `perpetua.digital` which is hosted on Squarespace. 
+I would like to transfer this to Vercel at some point. 
+
+### Building & Deployment
+The project will build and deploy immediately on Vercel whenever the `main` branch is updated.
+
+## 🔐 User's API Keys
+
+Using this app in development or in production requires Adobe Launch API credentials to function. 
+To setup a developer project in Adobe Developer Console, [see the video here](https://www.youtube.com/watch?v=5s65A_JFld8).
+Here's how we handle your credentials:
 
 1. **Credential Input**: You'll need to provide:
    - Client ID
