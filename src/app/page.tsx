@@ -18,25 +18,27 @@ import {
 import highlightSearchInJson from '@/lib/highlightSearchInJson';
 
 // Components
-import TextSearch from '@/components/search/TextSearch';
-import ExtensionFilter from '@/components/search/ExtensionFilter';
+import Callbacks from '@/components/callbacks/Callbacks';
 import CompanyPicker from '@/components/search/CompanyPicker';
-import PropertyPicker from '@/components/search/PropertyPicker';
-import SearchError from '@/components/search/SearchError';
-import PublishHistory from '@/components/publishhistory/PublishHistory';
-import LibraryExport from '@/components/export/LibraryExport';
 import DataElementSearchResponseRow from '@/components/search/DataElementSearchResponseRow';
-import RuleSearchResponseRow from '@/components/search/RuleSearchResponseRow';
+import ExtensionFilter from '@/components/search/ExtensionFilter';
 import ExtensionSearchResponseRow from '@/components/search/ExtensionSearchResponseRow';
+import LibraryExport from '@/components/export/LibraryExport';
+import PropertyPicker from '@/components/search/PropertyPicker';
+import PublishHistory from '@/components/publishhistory/PublishHistory';
 import Relationships from '@/components/relationships/Relationships';
+import RuleSearchResponseRow from '@/components/search/RuleSearchResponseRow';
+import TextSearch from '@/components/search/TextSearch';
+import SearchError from '@/components/search/SearchError';
 
 // Icons
+import Back from '@spectrum-icons/workflow/Back';
+import Calendar from '@spectrum-icons/workflow/Calendar';
+import DataCorrelated from '@spectrum-icons/workflow/DataCorrelated';
 import Download from '@spectrum-icons/workflow/Download';
+import Export from '@spectrum-icons/workflow/Export';
 import Filter from '@spectrum-icons/workflow/Filter';
 import Search from '@spectrum-icons/workflow/Search';
-import Calendar from '@spectrum-icons/workflow/Calendar';
-import Export from '@spectrum-icons/workflow/Export';
-import DataCorrelated from '@spectrum-icons/workflow/DataCorrelated';
 
 type SearchApiResponse =
     | DataElementSearchResponseItem[]
@@ -308,6 +310,13 @@ const MainContent = () => {
                     selectedProperty={selectedProperty}
                     apiKeys={apiKeys}
                 />
+        },
+        {
+            id: 6, icon: <Back />, name: 'Callbacks',
+            children: <Callbacks
+                selectedProperty={selectedProperty}
+                apiKeys={apiKeys}
+            />
         }
     ]
 
