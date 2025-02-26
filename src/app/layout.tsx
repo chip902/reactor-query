@@ -8,7 +8,7 @@ import GoogleAnalytics from '@/components/GoogleAnalytics'
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | Launch Assistant',
+        template: '%s | Perpetua Digital Assistant',
         default: 'Perpetua Digital Assistant',
     },
     description: 'Perpetua Digital Assistant for Adobe Launch',

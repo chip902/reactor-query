@@ -1,4 +1,4 @@
-# Contributing to The Perpetua Digital Launch Assistant
+# Contributing to The Perpetua Digital Assistant
 
 First off, thank you for considering contributing to our project! We welcome contributions from everyone.
 

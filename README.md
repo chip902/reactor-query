@@ -1,4 +1,4 @@
-# The Perpetua Digital Launch Assistant
+# The Perpetua Digital Assistant
 
 This interactive tool helps you work with [Adobe's Reactor API](https://developer.adobe.com/experience-platform-apis/references/reactor/). It's built with [Next.js](https://nextjs.org) and hosted via Vercel. It provides a user-friendly interface for making API calls using your Adobe Launch API credentials. No user data or Launch Property data is stored in a database or on the server.
 

@@ -1,4 +1,4 @@
-const PRODUCT_NAME = 'Perpetua Digital Launch Assistant';
+const PRODUCT_NAME = 'Perpetua Digital Assistant';
 
 
 // Im going to us this in the future for a callback builder
