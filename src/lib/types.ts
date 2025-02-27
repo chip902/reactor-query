@@ -35,10 +35,11 @@ export type ReactorAPIResponse = {
       updated_by_display_name: string;
       url?: string; // for callbacks only
       display_name?: string; // for extensions only
-      settings?: string;
-      delegate_descriptor_id?: string;
+      settings?: string; // extensions & data elements
+      delegate_descriptor_id?: string; // for rule components only
       state?: string; // for libraries only
       published_at?: string; // for libraries only
+      subscriptions?: string[]; // for callbacks only
     };
     relationships: {
       properties: {

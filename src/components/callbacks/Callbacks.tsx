@@ -12,7 +12,7 @@ const Callbacks = ({ selectedProperty, apiKeys }: {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [callbacks, setCallbacks] = useState<TruncatedReactorAPIResponseItem[]>([]);
-
+    console.log(callbacks);
     useEffect(() => {
         const fetchCallbacks = async () => {
             if (!selectedProperty.id || !apiKeys) {
@@ -95,7 +95,7 @@ const Callbacks = ({ selectedProperty, apiKeys }: {
                             >
                                 <Flex direction="column" gap="size-100">
                                     <Flex justifyContent="space-between" alignItems="center">
-                                        <Heading level={4}>{callback.attributes.url || 'No URL specified'}</Heading>
+                                        <Text><strong>{callback.attributes.url || 'No URL specified'}</strong></Text>
                                         <Text UNSAFE_className="text-sm text-gray-500">
                                             ID: {callback.id}
                                         </Text>
@@ -104,6 +104,29 @@ const Callbacks = ({ selectedProperty, apiKeys }: {
                                     <Divider size="S" />
 
                                     <Flex direction="column" gap="size-50">
+                                        {callback.attributes.subscriptions && callback.attributes.subscriptions.length > 0 ? (
+                                            <>
+                                                <Text>
+                                                    <strong>Subscriptions:</strong>
+                                                </Text>
+                                                <View
+                                                    padding="size-100"
+                                                    marginBottom="size-100"
+                                                    UNSAFE_className="bg-gray-50 rounded-md"
+                                                >
+                                                    {callback.attributes.subscriptions.map((subscription: string, index: number) => (
+                                                        <Text key={index} UNSAFE_className="text-sm font-mono">
+                                                            • {subscription}
+                                                        </Text>
+                                                    ))}
+                                                </View>
+                                            </>
+                                        ) : (
+                                            <Text>
+                                                <strong>Subscriptions:</strong> None
+                                            </Text>
+                                        )}
+
                                         <Text>
                                             <strong>Created:</strong> {new Date(callback.attributes.created_at).toLocaleString()}
                                         </Text>
