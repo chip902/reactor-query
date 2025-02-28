@@ -12,7 +12,6 @@ const Callbacks = ({ selectedProperty, apiKeys }: {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [callbacks, setCallbacks] = useState<TruncatedReactorAPIResponseItem[]>([]);
-    console.log(callbacks);
     useEffect(() => {
         const fetchCallbacks = async () => {
             if (!selectedProperty.id || !apiKeys) {

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         template: '%s | Perpetua Digital Assistant',
         default: 'Perpetua Digital Assistant',
     },
-    description: 'Perpetua Digital Assistant for Adobe Launch',
+    description: 'Perpetua Digital Assistant for Adobe Tag Managment systems',
     icons: {
         icon: '/favicon.ico',
         shortcut: '/favicon.ico',
