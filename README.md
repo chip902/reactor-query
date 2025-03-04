@@ -6,6 +6,12 @@ This interactive tool helps you work with [Adobe's Reactor API](https://develope
 ![Architecture Diagram](/public/images/architecture.png)
 [Draw.io Diagram Link](https://drive.google.com/file/d/16ZAGvFH4pYcptr5295Mp9KG376mWRabb/view?usp=sharing)
 
+## Why an API Layer?
+There are 3 main reasons that an API layer is needed:
+1. The Launch/Reactor API cannot be called directly from the front end of a website due to CORS restrictions.
+2. The backend can use the Reactor Node SDK to make the API calls rather than building them from scratch. This greatly simplifies the code.
+3. The Launch/Reactor API sends back a lot of unnecessary data. It is more practical to call the Reactor API on the backend, format the data, and return only what is needed to the front end.
+
 ### Front end
 The front end is built with Next.js and React. The styles are a mixture of [Tailwind CSS](https://tailwindcss.com/) and [Adobe React Spectrum](https://react-spectrum.adobe.com/react-spectrum/getting-started.html).
 
