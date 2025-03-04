@@ -11,6 +11,8 @@ jest.mock('@/utils/secureStorage', () => ({
   saveApiKeys: jest.fn(),
   getApiKeys: jest.fn(),
   clearApiKeys: jest.fn(),
+  setStoragePreference: jest.fn(),
+  getStoragePreference: jest.fn(() => false),
 }));
 
 // Mock analytics hook
@@ -56,7 +58,7 @@ jest.mock('@adobe/react-spectrum', () => ({
     );
   },
   ButtonGroup: ({ children }: any) => <div>{children}</div>,
-  Text: ({ children }: any) => <span>{children}</span>,
+  Text: ({ children, UNSAFE_className }: any) => <span className={UNSAFE_className}>{children}</span>,
   Divider: () => <hr />,
   Heading: ({ children }: any) => <h2>{children}</h2>,
   ActionButton: ({ children, onPress, isDisabled }: any) => (
@@ -71,6 +73,18 @@ jest.mock('@adobe/react-spectrum', () => ({
       <button onClick={onPrimaryAction} data-testid="confirm-clear-settings">
         {primaryActionLabel}
       </button>
+    </div>
+  ),
+  Checkbox: ({ children, isSelected, onChange, isRequired }: any) => (
+    <div>
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={e => onChange(e.target.checked)}
+        required={isRequired}
+        data-testid="persist-checkbox"
+      />
+      <label>{children}</label>
     </div>
   ),
 }));
@@ -139,12 +153,17 @@ describe('SettingsForm', () => {
       await userEvent.type(screen.getByTestId('input-Organization ID'), 'test-org');
       await userEvent.type(screen.getByTestId('input-Client ID'), 'test-client');
       await userEvent.type(screen.getByTestId('input-Client Secret'), 'test-secret');
+      
+      // Check the persist checkbox
+      const persistCheckbox = screen.getByTestId('persist-checkbox');
+      await userEvent.click(persistCheckbox);
 
       const submitButton = screen.getByTestId('submit-button');
       await userEvent.click(submitButton);
     });
 
     await waitFor(() => {
+      expect(require('@/utils/secureStorage').setStoragePreference).toHaveBeenCalledWith(true);
       expect(ToastQueue.positive).toHaveBeenCalledWith(
         'Settings updated successfully.',
         expect.any(Object)
@@ -176,6 +195,8 @@ describe('SettingsForm', () => {
     });
 
     await waitFor(() => {
+      // Verify that setStoragePreference was called
+      expect(require('@/utils/secureStorage').setStoragePreference).toHaveBeenCalled();
       expect(ToastQueue.negative).toHaveBeenCalledWith(
         'Failed to update settings.',
         expect.any(Object)

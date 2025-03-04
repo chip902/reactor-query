@@ -1,17 +1,21 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { UserSettings } from '@/lib/types';
-import { Button, ButtonGroup, Form, TextField, Text, Heading, ActionButton, DialogTrigger, AlertDialog } from '@adobe/react-spectrum';
+import { Button, ButtonGroup, Form, TextField, Text, Heading, ActionButton, DialogTrigger, AlertDialog, Checkbox } from '@adobe/react-spectrum';
 import './styles.css';
 import RotateCWBold from '@spectrum-icons/workflow/RotateCWBold';
 import { ToastQueue } from '@react-spectrum/toast';
-import { saveApiKeys, getApiKeys, clearApiKeys } from '@/utils/secureStorage';
+import { saveApiKeys, getApiKeys, clearApiKeys, setStoragePreference, getStoragePreference } from '@/utils/secureStorage';
 
 const SettingsForm = () => {
     const [settingsUpdating, setSettingsUpdating] = useState(false);
     const [settingsClearing, setSettingsClearing] = useState(false);
+    const [persistSettings, setPersistSettings] = useState(() => {
+        // Initialize persistence preference from localStorage
+        return getStoragePreference();
+    });
     const [formData, setFormData] = useState<UserSettings>(() => {
-        // Initialize form data from session storage
+        // Initialize form data from storage
         const savedSettings = getApiKeys();
         return savedSettings || {
             orgId: '',
@@ -40,6 +44,9 @@ const SettingsForm = () => {
         setSettingsUpdating(true);
 
         try {
+            // First save the storage preference
+            setStoragePreference(persistSettings);
+            // Then save the API keys
             saveApiKeys(formData);
             ToastQueue.positive('Settings updated successfully.', { timeout: 3000 });
             setSettingsUpdating(false);
@@ -91,6 +98,15 @@ const SettingsForm = () => {
                 onChange={(value) => handleChange(value, 'clientSecret')}
                 isRequired
             />
+
+            <Checkbox
+                isSelected={persistSettings}
+                onChange={setPersistSettings}
+                isRequired={false}
+            >
+                Store my credentials in local storage‡
+            </Checkbox>
+            <Text UNSAFE_className='text-sm italic'>‡ Checking this box will store your API credentials in your browser&apos;s local storage instead of the default session storage. This will allow your credentials to persist even after the browser is closed.</Text>
 
             <ButtonGroup UNSAFE_className='pt-2' orientation='horizontal'>
                 <Button variant="accent"
