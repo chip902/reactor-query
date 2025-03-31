@@ -35,7 +35,7 @@ const searchComponentSettings = (
             while ((match = pattern.exec(settings)) !== null) {
                 // match[2] is the capture group from _satellite.getVar
                 // match[3] is the capture group from %...%
-                const matchName = match[2] || match[3];
+                const matchName = match[2] || match[3] || match[4];
                 if (matchName) {
                     matches.add({
                         componentId: component.id,
@@ -173,7 +173,7 @@ const Relationships = ({ selectedCompany, selectedProperty, apiKeys }: { selecte
     useEffect(() => {
         if (ruleComponents.length > 0) {
             // Pattern to match _satellite.getVar('...') contents and %...% patterns
-            const pattern = /(_satellite\.getVar\(['"](.*?)['"])|%(.*?)%/g;
+            const pattern = /(_satellite\.getVar\(['](.*?)['])|%(.*?)%|_satellite\.getVar\(\\"(.*?)\\"\)/g;
             const results = searchComponentSettings(ruleComponents, pattern);
             setSearchResults(results.map((result, index) => ({ id: index, matchName: result.matchName, typeName: result.typeName, delegate_descriptor_id: result.delegate_descriptor_id, componentId: result.componentId })));
         }
