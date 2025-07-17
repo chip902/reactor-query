@@ -1,33 +1,13 @@
-'use client';
-
-import Link from 'next/link';
-import { useAnalytics } from '@/app/hooks/useAnalytics';
+"use client";
 
 const Footer = () => {
-    const { event } = useAnalytics();
-
-    return (
-        <footer className="mt-auto w-full bg-blue-500 py-4">
-            <div className="container mx-auto text-center text-white">
-                <p><Link className="underline" target='_blank' href="/support">Support</Link> |{" "}
-                    <Link
-                        className="underline"
-                        onClick={() => event({
-                            category: 'Other',
-                            label: 'Donate',
-                            action: 'click'
-                        })}
-                        target="_blank"
-                        href="https://buymeacoffee.com/perpetuadigital">
-                        Donate
-                    </Link> |{" "}
-                    <Link className="underline" target='_blank' href="/privacy">Privacy Policy</Link> |{" "}
-                    <Link className="underline" target='_blank' href="/features">Features</Link> |{" "}
-                    <Link className="underline" target='_blank' href="https://www.perpetua.digital">Blog</Link>
-                </p>
-            </div>
-        </footer >
-    );
+	return (
+		<footer className="mt-auto w-full bg-blue-500 py-4">
+			<div className="container mx-auto text-center text-white">
+				<p>© {new Date().getFullYear()} Chip Hosting Solutions LLC All rights reserved.</p>
+			</div>
+		</footer>
+	);
 };
 
 export default Footer;

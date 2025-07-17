@@ -8,6 +8,7 @@ import ShowMenu from '@spectrum-icons/workflow/ShowMenu';
 import Search from '@spectrum-icons/workflow/Search';
 import Settings from '@spectrum-icons/workflow/Settings';
 import HelpOutline from '@spectrum-icons/workflow/HelpOutline';
+import Edit from '@spectrum-icons/workflow/Edit';
 
 import { PRODUCT_NAME } from '@/lib/constants';
 
@@ -27,8 +28,8 @@ const menuLinkClass = 'text-gray-500 hover:text-blue-600 font-medium px-3 py-2 r
 
 const MENU_ITEMS = {
     main: [
-
         { icon: <Search size='S' />, text: 'Home', href: '/' },
+        { icon: <Edit size='S' />, text: 'Bulk Edit', href: '/bulk-edit' },
         { icon: <Settings size='S' />, text: 'Settings', href: '/settings' },
         { icon: <HelpOutline size='S' />, text: 'Support', href: '/support' }
     ]

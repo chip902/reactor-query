@@ -52,28 +52,76 @@ export async function POST(request: Request) {
 
         let query;
 
+        console.log('API received search request with:', {
+            tabId: validatedData.tabId,
+            searchValue: validatedData.searchValue,
+            propertyId: validatedData.launchPropertyId
+        });
+
         switch (validatedData.tabId) {
             case 1: // Text
-                query = {
-                    "data": {
-                        "query": {
-                            "attributes.*": {
-                                "value": validatedData.searchValue,
+                // Check if the search value appears to be a Rule ID (starts with RL followed by alphanumeric characters)
+                const isRuleIdFormat = /^RL[a-zA-Z0-9]+$/.test(validatedData.searchValue.trim());
+                
+                if (isRuleIdFormat) {
+                    console.log('Detected Rule ID format in text search, using specialized query');
+                    // Define the query structure with proper typing
+                    type QueryType = {
+                        data: {
+                            query: Record<string, { value: string | number } | string>;
+                            resource_types: string[];
+                        }
+                    };
+                    
+                    // Use a specialized query for rule IDs
+                    query = {
+                        "data": {
+                            "query": {
+                                "id": validatedData.searchValue.trim()
                             },
-                            "relationships.property.data.id": {
-                                "value": validatedData.launchPropertyId // Replace with the actual property ID
-                            }
-                        },
-                        "resource_types": [
-                            'rules',
-                            'rule_components',
-                            'data_elements',
-                            'extensions'
-                        ]
+                            "resource_types": ['rules']
+                        }
+                    } as QueryType;
+                    
+                    // Add property filter if specified
+                    if (validatedData.launchPropertyId) {
+                        query.data.query["relationships.property.data.id"] = {
+                            "value": validatedData.launchPropertyId
+                        };
                     }
+                    
+                    // Include special parameters for revision history
+                    if (validatedData.includeRevisionHistory) {
+                        console.log('Including revision history for Rule ID search');
+                    } else {
+                        // Only include the current version (revision 0) if not including history
+                        query.data.query["attributes.revision_number"] = {
+                            "value": 0
+                        };
+                    }
+                } else {
+                    // Standard text search for non-Rule IDs
+                    query = {
+                        "data": {
+                            "query": {
+                                "attributes.*": {
+                                    "value": validatedData.searchValue,
+                                },
+                                "relationships.property.data.id": {
+                                    "value": validatedData.launchPropertyId
+                                }
+                            },
+                            "resource_types": [
+                                'rules',
+                                'rule_components',
+                                'data_elements',
+                                'extensions'
+                            ]
+                        }
+                    };
                 }
                 if (!validatedData.includeRevisionHistory) {
-                    // @ts-expect-error it doesn tlike this key setuup?
+                    // Only include the current version (revision 0) if not including history
                     query.data.query['attributes.revision_number'] = {
                         value: 0
                     };
@@ -87,7 +135,7 @@ export async function POST(request: Request) {
                                 "value": validatedData.searchValue,
                             },
                             "attributes.revision_number": {
-                                "value": 0
+                                "value": 0 as number
                             },
                             "relationships.property.data.id": {
                                 "value": validatedData.launchPropertyId // Replace with the actual property ID
@@ -100,7 +148,27 @@ export async function POST(request: Request) {
                     }
                 }
                 break;
+            case 8: // Rule ID
+                console.log('Searching by Rule ID:', validatedData.searchValue);
+                // First, strip any whitespace from the rule ID
+                const cleanedRuleId = validatedData.searchValue.trim();
+                
+                // Try a more direct approach for ID search
+                query = {
+                    "data": {
+                        "query": {
+                            "id": cleanedRuleId,
+                            "relationships.property.data.id": validatedData.launchPropertyId
+                        },
+                        "resource_types": [
+                            'rules'
+                        ]
+                    }
+                }
+                break;
         }
+
+        console.log('Sending search query:', JSON.stringify(query, null, 2));
 
         const response = await fetch(apiUrl, {
             method: 'POST',
@@ -116,6 +184,9 @@ export async function POST(request: Request) {
 
         // Parse the response
         const data = await response.json();
+        console.log('API response status:', response.status);
+        console.log('API response meta:', data.meta ? JSON.stringify(data.meta, null, 2) : 'No meta data');
+        console.log('API response hits:', data.meta ? data.meta.total_hits : 'No hits info');
 
         const { total_hits } = data.meta;
         if (total_hits > 0) {
