@@ -26,38 +26,38 @@ const ExtensionSearchResponseRow = ({ item, searchValue, index, highlightSearchI
 	};
 
 	return (
-		<div className="w-full border rounded-lg shadow-sm bg-white mb-2">
+		<div className="w-full border rounded-lg shadow-sm bg-[var(--color-card)] border-[var(--color-border)] mb-2">
 			<button
 				onClick={() => setIsExpanded(!isExpanded)}
-				className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-t-lg">
+				className="w-full px-4 py-3 flex items-center justify-between hover:bg-[var(--color-card-hover)] transition-colors rounded-t-lg">
 				<div className="flex flex-col space-y-2 w-full sm:flex-row sm:space-y-0 sm:items-center sm:justify-between">
 					<div className="flex items-center space-x-3">
 						<span className="font-medium">
 							{index + 1}.{" "}
 							<a
 								target="_blank"
-								className="text-blue-500 underline hover:text-blue-800"
+								className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]"
 								href={`https://experience.adobe.com/#/@organizationName/sname:prod/data-collection/tags/companies/${lastSearchedCompany.id}/properties/${item.relationships.property.data.id}/extensions/${item.id}`}>
 								{item.attributes.name}
 							</a>
 							{hasSearchMatch(item, searchValue) && <span className="ml-2 text-xs no-underline">🎯</span>}
 						</span>
 						{item.meta.match_score && (
-							<span className="px-2 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">Match Score: {item.meta.match_score.toFixed(2)}</span>
+							<span className="px-2 py-1 text-xs bg-[var(--color-badge-bg)] text-[var(--color-badge-text)] rounded-full">Match Score: {item.meta.match_score.toFixed(2)}</span>
 						)}
 						<span
 							className={`px-2 py-1 text-xs rounded-full ${
-								item.attributes.enabled ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+								item.attributes.enabled ? "bg-[var(--color-accent-green-bg)] text-[var(--color-accent-green-text)]" : "bg-[var(--color-badge-bg)] text-[var(--color-badge-text)]"
 							}`}>
 							{item.attributes.enabled ? "Enabled" : "Disabled"}
 						</span>
-						{item.attributes.deleted_at && <span className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full">Deleted</span>}
-						<span className="px-2 py-1 text-xs border border-gray-200 rounded-full">
+						{item.attributes.deleted_at && <span className="px-2 py-1 text-xs bg-[var(--color-accent-red-bg)] text-[var(--color-accent-red-text)] rounded-full">Deleted</span>}
+						<span className="px-2 py-1 text-xs border border-[var(--color-border)] text-[var(--color-text-secondary)] rounded-full">
 							Rev: {item.attributes.revision_number > 0 ? item.attributes.revision_number : "Current"}
 						</span>
-						<span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">v{item.attributes.version}</span>
+						<span className="px-2 py-1 text-xs bg-[var(--color-accent-blue-bg)] text-[var(--color-accent-blue-text)] rounded-full">v{item.attributes.version}</span>
 					</div>
-					<div className="flex items-center space-x-3 text-xs text-gray-500">
+					<div className="flex items-center space-x-3 text-xs text-[var(--color-text-secondary)]">
 						<span>Last Updated: {new Date(item.attributes.updated_at).toLocaleString()}</span>
 						<span>By: {item.attributes.updated_by_display_name}</span>
 					</div>
@@ -72,10 +72,10 @@ const ExtensionSearchResponseRow = ({ item, searchValue, index, highlightSearchI
 			</button>
 			{isExpanded && (
 				<div className="px-4 py-3 border-t">
-					<div className="mb-2 text-sm text-gray-500">ID: {item.id}</div>
+					<div className="mb-2 text-sm text-[var(--color-text-secondary)]">ID: {item.id}</div>
 					<div className="mt-4">
-						<h3 className="text-sm font-medium text-gray-500 mb-2">Details</h3>
-						<pre className="p-4 bg-gray-50 rounded-lg overflow-x-auto text-sm">
+						<h3 className="text-sm font-medium text-[var(--color-text-secondary)] mb-2">Details</h3>
+						<pre className="p-4 bg-[var(--color-code-bg)] rounded-lg overflow-x-auto text-sm text-[var(--color-code-text)]">
 							<div
 								dangerouslySetInnerHTML={{
 									__html: highlightSearchInJson(formatAttributesWithParsedSettings(item.attributes), searchValue),

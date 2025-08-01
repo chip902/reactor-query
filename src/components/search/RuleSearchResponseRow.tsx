@@ -5,6 +5,7 @@ import { RuleSearchResponseItem, RuleComponentSearchResponseItem } from "@/lib/t
 import LoadingSpinner from "../LoadingSpinner";
 import { Divider } from "@adobe/react-spectrum";
 import formatAttributesWithParsedSettings from "@/lib/formatAttributesWithParsedSettings";
+import formatNestedJsonContent from "@/lib/formatNestedJsonContent";
 import { useApiKeys } from "@/app/hooks/useApiKeys";
 import { createApiHeaders } from "@/lib/apiUtils";
 
@@ -72,29 +73,29 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 
 		return (
 			<div className="mb-4">
-				<h4 className="text-sm font-medium text-gray-700 mb-2">{title}</h4>
+				<h4 className="text-sm font-medium text-[var(--color-text-secondary)] mb-2">{title}</h4>
 				<div className="space-y-2">
 					{components.map((component) => (
-						<div key={component.id} className="p-2 bg-gray-50 rounded-md">
+						<div key={component.id} className="p-2 bg-[var(--color-card-secondary)] rounded-md">
 							<div className="flex items-center justify-between">
-								<span className="text-sm font-medium text-gray-900 pb-2">
+								<span className="text-sm font-medium text-[var(--color-text-primary)] pb-2">
 									<a
 										target="_blank"
-										className="text-blue-500 underline hover:text-blue-800"
+										className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]"
 										href={`https://experience.adobe.com/#/@organizationName/sname:prod/data-collection/tags/companies/${lastSearchedCompany.id}/properties/${item.relationships.property.data.id}/rules/${item.id}/ruleComponent/${component.id}`}>
 										{component.attributes.name}
 									</a>
 									{hasSearchMatch(component.attributes, searchValue) && <span className="ml-2 text-xs">🎯</span>}
 								</span>
 								<div className="flex items-center space-x-2">
-									<span className="text-xs text-gray-500">ID: {component.id}</span>
+									<span className="text-xs text-[var(--color-text-secondary)]">ID: {component.id}</span>
 									<button
 										onClick={(e) => {
 											e.stopPropagation();
 											toggleComponentExpand(component.id);
 										}}
-										className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-										<svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										className="p-1 hover:bg-[var(--color-card-hover)] rounded-full transition-colors">
+										<svg className="w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path
 												strokeLinecap="round"
 												strokeLinejoin="round"
@@ -110,10 +111,13 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 								</div>
 							</div>
 							{expandedComponents.has(component.id) && component.attributes && (
-								<pre className="mt-2 text-xs text-gray-500 overflow-x-auto bg-gray-100 p-2 rounded">
+								<pre className="mt-2 text-xs overflow-x-auto bg-[var(--color-code-bg)] p-3 rounded whitespace-pre-wrap code-block text-[var(--color-code-text)]">
 									<div
 										dangerouslySetInnerHTML={{
-											__html: highlightSearchInJson(formatAttributesWithParsedSettings(component.attributes), searchValue),
+											__html: highlightSearchInJson(
+												formatNestedJsonContent(formatAttributesWithParsedSettings(component.attributes)),
+												searchValue
+											)
 										}}
 									/>
 								</pre>
@@ -156,17 +160,17 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 	}, [isExpanded, item.id, fetchRuleComponents]);
 
 	return (
-		<div className="w-full border rounded-lg shadow-sm bg-white mb-2">
+		<div className="w-full border rounded-lg shadow-sm bg-[var(--color-card)] border-[var(--color-border)] mb-2">
 			<button
 				onClick={() => setIsExpanded(!isExpanded)}
-				className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-t-lg">
+				className="w-full px-4 py-3 flex items-center justify-between hover:bg-[var(--color-card-hover)] transition-colors rounded-t-lg">
 				<div className="flex flex-col space-y-2 w-full sm:flex-row sm:space-y-0 sm:items-center sm:justify-between">
 					<div className="flex items-center space-x-3">
 						<span className="font-medium">
 							{index + 1}.{" "}
 							<a
 								target="_blank"
-								className="text-blue-500 underline hover:text-blue-800"
+								className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]"
 								href={`https://experience.adobe.com/#/@organizationName/sname:prod/data-collection/tags/companies/${lastSearchedCompany.id}/properties/${item.relationships.property.data.id}/rules/${item.id}`}>
 								{item.attributes.name}
 							</a>
@@ -174,7 +178,7 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 						</span>
 						<span
 							className={`px-2 py-1 text-xs rounded-full ${
-								item.attributes.enabled ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+								item.attributes.enabled ? "bg-[var(--color-accent-green-bg)] text-[var(--color-accent-green-text)]" : "bg-[var(--color-badge-bg)] text-[var(--color-badge-text)]"
 							}`}>
 							{item.attributes.enabled ? "Enabled" : "Disabled"}
 						</span>
@@ -184,7 +188,7 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 						</span>
 					</div>
 
-					<div className="flex items-center space-x-3 text-xs text-gray-500">
+					<div className="flex items-center space-x-3 text-xs text-[var(--color-text-secondary)]">
 						<span>Last Updated: {new Date(item.attributes.updated_at).toLocaleString()}</span>
 						<span>By: {attributes.updated_by_display_name}</span>
 					</div>
@@ -202,18 +206,18 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 				<div className="px-4 py-3 border-t">
 					<div className="mb-4">
 						Rule Details
-						<div className="p-2 bg-gray-50 rounded-md">
+						<div className="p-2 bg-[var(--color-card-secondary)] rounded-md">
 							<div className="flex items-center justify-between">
-								<span className="text-sm font-medium text-gray-900 pb-2">
+								<span className="text-sm font-medium text-[var(--color-text-primary)] pb-2">
 									{item.attributes.name}
 									{hasSearchMatch(item, searchValue) && <span className="ml-2 text-xs">🎯</span>}
 								</span>
 								<div className="flex items-center space-x-2">
-									<span className="text-xs text-gray-500">ID: {item.id}</span>
+									<span className="text-xs text-[var(--color-text-secondary)]">ID: {item.id}</span>
 									<button
 										onClick={() => setShowRuleDetails(!showRuleDetails)}
-										className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-										<svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										className="p-1 hover:bg-[var(--color-card-hover)] rounded-full transition-colors">
+										<svg className="w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path
 												strokeLinecap="round"
 												strokeLinejoin="round"
@@ -229,10 +233,13 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 								</div>
 							</div>
 							{showRuleDetails && (
-								<pre className="mt-2 text-xs text-gray-500 overflow-x-auto bg-gray-100 p-2 rounded">
+								<pre className="mt-2 text-xs overflow-x-auto bg-[var(--color-code-bg)] p-3 rounded whitespace-pre-wrap code-block text-[var(--color-code-text)]">
 									<div
 										dangerouslySetInnerHTML={{
-											__html: highlightSearchInJson(item, searchValue),
+											__html: highlightSearchInJson(
+												formatNestedJsonContent(item),
+												searchValue
+											)
 										}}
 									/>
 								</pre>
@@ -248,7 +255,7 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 						</div>
 					) : (
 						<div className="space-y-2">
-							<h3 className="text-sm font-medium text-gray-700 mb-4">Rule Components</h3>
+							<h3 className="text-sm font-medium text-[var(--color-text-secondary)] mb-4">Rule Components</h3>
 							{ruleComponents.length > 0 ? (
 								<div>
 									{(() => {
@@ -263,7 +270,7 @@ const RuleSearchResponseRow = ({ item, searchValue, index, highlightSearchInJson
 									})()}
 								</div>
 							) : (
-								<p className="text-sm text-gray-500">No components found for this rule.</p>
+								<p className="text-sm text-[var(--color-text-secondary)]">No components found for this rule.</p>
 							)}
 						</div>
 					)}

@@ -32,7 +32,6 @@ interface Environment {
 const BulkRuleEditor = ({ selectedProperty, apiKeys }: BulkRuleEditorProps) => {
 	console.log("BulkRuleEditor rendered with selectedProperty:", selectedProperty);
 
-	// Analytics handled by direct gtag calls
 	const [environments, setEnvironments] = useState<Environment[]>([]);
 	const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | null>(null);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -153,11 +152,6 @@ const BulkRuleEditor = ({ selectedProperty, apiKeys }: BulkRuleEditorProps) => {
 
 			setMatchingRules(matched);
 			setIsPreviewOpen(true);
-			window.gtag("event", "bulk_edit_preview", {
-				event_category: "Bulk Edit",
-				event_label: `Matches: ${matched.length}`,
-				value: matched.length,
-			});
 		} catch (error) {
 			console.error("Error finding matching rules:", error);
 		} finally {
@@ -209,11 +203,6 @@ const BulkRuleEditor = ({ selectedProperty, apiKeys }: BulkRuleEditorProps) => {
 
 			setUpdateResults(results);
 			setIsResultsDialogOpen(true);
-			window.gtag("event", "bulk_edit_complete", {
-				event_category: "Bulk Edit",
-				event_label: `Success: ${results.success.length}, Failed: ${results.failed.length}`,
-				value: results.success.length,
-			});
 		} catch (error) {
 			console.error("Error updating rules:", error);
 		} finally {

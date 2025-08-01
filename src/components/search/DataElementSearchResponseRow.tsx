@@ -39,17 +39,17 @@ const DataElementSearchResponseRow = ({ item, searchValue, index, highlightSearc
 	// https://experience.adobe.com/#/@perpetuaexchange/sname:prod/data-collection/tags/companies/COabc123/properties/PRabc123/dataElements/DExyz123
 
 	return (
-		<div className="w-full border rounded-lg shadow-sm bg-gray-300 mb-2">
+		<div className="w-full border rounded-lg shadow-sm bg-[var(--color-card)] border-[var(--color-border)] mb-2">
 			<button
 				onClick={() => setIsExpanded(!isExpanded)}
-				className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-t-lg">
+				className="w-full px-4 py-3 flex items-center justify-between hover:bg-[var(--color-card-hover)] transition-colors rounded-t-lg">
 				<div className="flex flex-col space-y-2 w-full sm:flex-row sm:space-y-0 sm:items-center sm:justify-between">
 					<div className="flex items-center space-x-3">
 						<span className="font-medium">
 							{index + 1}.{" "}
 							<a
 								target="_blank"
-								className="text-blue-500 underline hover:text-blue-800"
+								className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]"
 								href={`https://experience.adobe.com/#/@organizationName/sname:prod/data-collection/tags/companies/${lastSearchedCompany.id}/properties/${propertyId}/dataElements/${item.id}`}>
 								{item.attributes.name}
 							</a>
@@ -57,18 +57,20 @@ const DataElementSearchResponseRow = ({ item, searchValue, index, highlightSearc
 						</span>
 						<span
 							className={`px-2 py-1 text-xs rounded-full ${
-								item.attributes.enabled ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+								item.attributes.enabled ? "bg-[var(--color-accent-green-bg)] text-[var(--color-accent-green-text)]" : "bg-[var(--color-badge-bg)] text-[var(--color-badge-text)]"
 							}`}>
 							{item.attributes.enabled ? "Enabled" : "Disabled"}
 						</span>
-						{item.attributes.deleted_at && <span className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full">Deleted</span>}
+						{item.meta?.match_score && (
+							<span className="px-2 py-1 text-xs bg-[var(--color-badge-bg)] text-[var(--color-badge-text)] rounded-full">Match Score: {item.meta.match_score.toFixed(2)}</span>
+						)}
 						<span className="px-2 py-1 text-xs border border-gray-200 rounded-full">Rev: {revisionText}</span>
-						<span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
+						<span className="px-2 py-1 text-xs bg-[var(--color-accent-blue-bg)] text-[var(--color-accent-blue-text)] rounded-full">
 							{formatDelegateText(item.attributes.delegate_descriptor_id)}
 						</span>
 					</div>
 
-					<div className="flex items-center space-x-3 text-xs text-gray-500">
+					<div className="flex items-center space-x-3 text-xs text-[var(--color-text-secondary)]">
 						<span>Last Updated: {formattedDate}</span>
 						<span>By: {item.attributes.updated_by_display_name}</span>
 					</div>
@@ -85,10 +87,10 @@ const DataElementSearchResponseRow = ({ item, searchValue, index, highlightSearc
 
 			{isExpanded && (
 				<div className="px-4 py-3 border-t">
-					<div className="mb-2 text-sm text-gray-900">ID: {item.id}</div>
+					<div className="mb-2 text-sm text-[var(--color-text-secondary)]">ID: {item.id}</div>
 					<div className="mt-4">
-						<h3 className="text-sm font-medium text-gray-900 mb-2">Details</h3>
-						<pre className="p-4 bg-gray-500 text-slate-700 rounded-lg overflow-x-auto text-sm">
+						<h3 className="text-sm font-medium text-[var(--color-text-secondary)] mb-2">Details</h3>
+						<pre className="p-4 bg-[var(--color-code-bg)] rounded-lg overflow-x-auto text-sm text-[var(--color-code-text)]">
 							<div
 								dangerouslySetInnerHTML={{
 									__html: highlightSearchInJson(formatAttributesWithParsedSettings(item.attributes), searchValue),

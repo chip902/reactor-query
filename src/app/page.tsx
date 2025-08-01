@@ -190,11 +190,6 @@ const MainContent = () => {
 			setRuleResults(data.data.filter((item: RuleSearchResponseItem) => item.type === "rules"));
 			setDataElementResults(data.data.filter((item: DataElementSearchResponseItem) => item.type === "data_elements"));
 			setExtensionResults(data.data.filter((item: ExtensionSearchResponseItem) => item.type === "extensions"));
-			window.gtag("event", "search", {
-				event_category: "engagement",
-				event_label: "search",
-				value: 1,
-			});
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "An error occurred");
 		} finally {

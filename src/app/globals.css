@@ -3,58 +3,93 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+	--background: #ffffff;
+	--foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+	:root {
+		--background: #0a0a0a;
+		--foreground: #ededed;
+	}
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+	color: var(--foreground);
+	background: var(--background);
+	font-family: Quicksand, sans-serif;
 }
 
 /* Search result highlighting */
 
-pre span {
-  animation: pulse 1s ease-in-out infinite;
+pre span.highlight {
+	animation: pulse 1s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0% {
-    background-color: yellow;
-  }
-  50% {
-    background-color: orange;
-  }
-  100% {
-    background-color: yellow;
-  }
+	0% {
+		background-color: yellow;
+	}
+	50% {
+		background-color: orange;
+	}
+	100% {
+		background-color: yellow;
+	}
+}
+
+/* Code block styling */
+.code-block {
+	font-family: "Consolas", "Monaco", "Courier New", monospace;
+	line-height: 1.5;
+	font-size: 0.85rem;
+	border: 1px solid #e0e0e0;
+	background-color: #f8f8f8;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+	.code-block {
+		background-color: #1e1e1e;
+		border-color: #333;
+		color: #d4d4d4;
+	}
+
+	/* Syntax highlighting for dark mode */
+	.code-block .comment {
+		color: #6a9955;
+	}
+	.code-block .keyword {
+		color: #569cd6;
+	}
+	.code-block .string {
+		color: #ce9178;
+	}
+	.code-block .property {
+		color: #9cdcfe;
+	}
+	.code-block .number {
+		color: #b5cea8;
+	}
 }
 
 @layer base {
-  h1 {
-    @apply text-3xl font-bold;
-  }
-  h2 {
-    @apply text-2xl font-bold;
-  }
-  h3 {
-    @apply text-xl font-bold;
-  }
-  h4 {
-    @apply text-lg font-bold;
-  }
-  h5 {
-    @apply text-lg font-bold;
-  }
-  h6 {
-    @apply text-base font-bold;
-  }
+	h1 {
+		@apply text-3xl font-bold;
+	}
+	h2 {
+		@apply text-2xl font-bold;
+	}
+	h3 {
+		@apply text-xl font-bold;
+	}
+	h4 {
+		@apply text-lg font-bold;
+	}
+	h5 {
+		@apply text-lg font-bold;
+	}
+	h6 {
+		@apply text-base font-bold;
+	}
 }
