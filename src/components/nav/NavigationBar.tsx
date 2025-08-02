@@ -9,6 +9,7 @@ import Search from '@spectrum-icons/workflow/Search';
 import Settings from '@spectrum-icons/workflow/Settings';
 import HelpOutline from '@spectrum-icons/workflow/HelpOutline';
 import Edit from '@spectrum-icons/workflow/Edit';
+import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 
 import { PRODUCT_NAME } from '@/lib/constants';
 
@@ -24,7 +25,7 @@ type MenuItemProps = {
 }
 
 // Constants
-const menuLinkClass = 'text-gray-500 hover:text-blue-600 font-medium px-3 py-2 rounded-md text-sm transition-colors duration-150 ease-in-out'
+const menuLinkClass = 'text-[var(--color-text-secondary)] hover:text-[var(--color-link)] font-medium px-3 py-2 rounded-md text-sm transition-colors duration-150 ease-in-out'
 
 const MENU_ITEMS = {
     main: [
@@ -96,7 +97,7 @@ export default function NavigationBar() {
                             width={32}
                             height={32}
                         />
-                        <Link href="/" className="text-blue-700 font-bold ml-2 text-xl">
+                        <Link href="/" className="text-[var(--color-link)] font-bold ml-2 text-xl">
                             {PRODUCT_NAME}
                         </Link>
                     </div>
@@ -104,12 +105,13 @@ export default function NavigationBar() {
                     {/* Desktop menu */}
                     <div className="hidden md:flex items-center space-x-4">
                         <MainMenu />
+                        <ThemeSwitcher />
                     </div>
 
                     {/* Mobile menu button */}
                     <div className="md:hidden">
                         <div
-                            style={{ color: 'gray' }}
+                            style={{ color: 'var(--color-text-secondary)' }}
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
                             <ShowMenu UNSAFE_className='m-4 color-inherit h-6 w-6' />
@@ -125,6 +127,9 @@ export default function NavigationBar() {
                         {MENU_ITEMS.main.map((item, index) => (
                             <MenuItem key={index} icon={item.icon} text={item.text} href={item.href} />
                         ))}
+                        <li className="pt-4">
+                            <ThemeSwitcher />
+                        </li>
                     </ul>
                 </MobileMenuLayout>
             )}

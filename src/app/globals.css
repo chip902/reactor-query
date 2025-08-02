@@ -3,14 +3,110 @@
 @tailwind utilities;
 
 :root {
-	--background: #ffffff;
+	--background: #f8f9fa;
 	--foreground: #171717;
+
+	/* Card backgrounds */
+	--color-card: #ffffff;
+	--color-card-secondary: #f1f3f4;
+	--color-card-hover: #e9ecef;
+
+	/* Text colors */
+	--color-text-primary: #171717;
+	--color-text-secondary: #6b7280;
+	--color-text-muted: #9ca3af;
+
+	/* Border colors */
+	--color-border: #e5e7eb;
+	--color-border-secondary: #d1d5db;
+
+	/* Link colors */
+	--color-link: #3b82f6;
+	--color-link-hover: #2563eb;
+
+	/* Badge colors */
+	--color-badge-bg: #f3f4f6;
+	--color-badge-text: #374151;
+	--color-accent-green-bg: #dcfce7;
+	--color-accent-green-text: #166534;
+	--color-accent-blue-bg: #dbeafe;
+	--color-accent-blue-text: #1e40af;
+	--color-accent-yellow-bg: #fef3c7;
+	--color-accent-yellow-text: #92400e;
+	--color-accent-red-bg: #fee2e2;
+	--color-accent-red-text: #991b1b;
+	--color-accent-purple-bg: #f3e8ff;
+	--color-accent-purple-text: #7c3aed;
+
+	/* Code block colors */
+	--color-code-bg: #f8f8f8;
+	--color-code-text: #333333;
+
+	/* Input colors */
+	--color-input-bg: #ffffff;
+	--color-input-border: #d1d5db;
+	--color-input-focus: #3b82f6;
+
+	/* Button colors */
+	--color-button-bg: #f9fafb;
+	--color-button-hover: #f3f4f6;
+	--color-button-primary-bg: #3b82f6;
+	--color-button-primary-hover: #2563eb;
+	--color-button-primary-text: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--background: #0a0a0a;
+		--background: #1a1a1a;
 		--foreground: #ededed;
+
+		/* Card backgrounds */
+		--color-card: #1a1a1a;
+		--color-card-secondary: #262626;
+		--color-card-hover: #333333;
+
+		/* Text colors */
+		--color-text-primary: #f9fafb;
+		--color-text-secondary: #d1d5db;
+		--color-text-muted: #9ca3af;
+
+		/* Border colors */
+		--color-border: #374151;
+		--color-border-secondary: #4b5563;
+
+		/* Link colors */
+		--color-link: #60a5fa;
+		--color-link-hover: #3b82f6;
+
+		/* Badge colors */
+		--color-badge-bg: #374151;
+		--color-badge-text: #d1d5db;
+		--color-accent-green-bg: #14532d;
+		--color-accent-green-text: #bbf7d0;
+		--color-accent-blue-bg: #1e3a8a;
+		--color-accent-blue-text: #bfdbfe;
+		--color-accent-yellow-bg: #78350f;
+		--color-accent-yellow-text: #fcd34d;
+		--color-accent-red-bg: #7f1d1d;
+		--color-accent-red-text: #fca5a5;
+		--color-accent-purple-bg: #581c87;
+		--color-accent-purple-text: #ddd6fe;
+
+		/* Code block colors */
+		--color-code-bg: #1e1e1e;
+		--color-code-text: #d4d4d4;
+
+		/* Input colors */
+		--color-input-bg: #1a1a1a;
+		--color-input-border: #374151;
+		--color-input-focus: #3b82f6;
+
+		/* Button colors */
+		--color-button-bg: #262626;
+		--color-button-hover: #333333;
+		--color-button-primary-bg: #3b82f6;
+		--color-button-primary-hover: #2563eb;
+		--color-button-primary-text: #ffffff;
 	}
 }
 
@@ -92,4 +188,125 @@ pre span.highlight {
 	h6 {
 		@apply text-base font-bold;
 	}
+}
+
+/* Manual theme overrides */
+[data-theme="light"] {
+	--background: #f8f9fa;
+	--foreground: #171717;
+
+	/* Card backgrounds */
+	--color-card: #ffffff;
+	--color-card-secondary: #f1f3f4;
+	--color-card-hover: #e9ecef;
+
+	/* Text colors */
+	--color-text-primary: #171717;
+	--color-text-secondary: #6b7280;
+	--color-text-muted: #9ca3af;
+
+	/* Border colors */
+	--color-border: #e5e7eb;
+	--color-border-secondary: #d1d5db;
+
+	/* Link colors */
+	--color-link: #3b82f6;
+	--color-link-hover: #2563eb;
+
+	/* Badge colors */
+	--color-badge-bg: #f3f4f6;
+	--color-badge-text: #374151;
+	--color-accent-green-bg: #dcfce7;
+	--color-accent-green-text: #166534;
+	--color-accent-blue-bg: #dbeafe;
+	--color-accent-blue-text: #1e40af;
+	--color-accent-yellow-bg: #fef3c7;
+	--color-accent-yellow-text: #92400e;
+	--color-accent-red-bg: #fee2e2;
+	--color-accent-red-text: #991b1b;
+	--color-accent-purple-bg: #f3e8ff;
+	--color-accent-purple-text: #7c3aed;
+
+	/* Code block colors */
+	--color-code-bg: #f8f8f8;
+	--color-code-text: #333333;
+
+	/* Input colors */
+	--color-input-bg: #ffffff;
+	--color-input-border: #d1d5db;
+	--color-input-focus: #3b82f6;
+
+	/* Button colors */
+	--color-button-bg: #f9fafb;
+	--color-button-hover: #f3f4f6;
+	--color-button-primary-bg: #3b82f6;
+	--color-button-primary-hover: #2563eb;
+	--color-button-primary-text: #ffffff;
+}
+
+[data-theme="dark"] {
+	--background: #1a1a1a;
+	--foreground: #ededed;
+
+	/* Card backgrounds */
+	--color-card: #1a1a1a;
+	--color-card-secondary: #262626;
+	--color-card-hover: #333333;
+
+	/* Text colors */
+	--color-text-primary: #f9fafb;
+	--color-text-secondary: #d1d5db;
+	--color-text-muted: #9ca3af;
+
+	/* Border colors */
+	--color-border: #374151;
+	--color-border-secondary: #4b5563;
+
+	/* Link colors */
+	--color-link: #60a5fa;
+	--color-link-hover: #3b82f6;
+
+	/* Badge colors */
+	--color-badge-bg: #374151;
+	--color-badge-text: #d1d5db;
+	--color-accent-green-bg: #14532d;
+	--color-accent-green-text: #bbf7d0;
+	--color-accent-blue-bg: #1e3a8a;
+	--color-accent-blue-text: #bfdbfe;
+	--color-accent-yellow-bg: #78350f;
+	--color-accent-yellow-text: #fcd34d;
+	--color-accent-red-bg: #7f1d1d;
+	--color-accent-red-text: #fca5a5;
+	--color-accent-purple-bg: #581c87;
+	--color-accent-purple-text: #ddd6fe;
+
+	/* Code block colors */
+	--color-code-bg: #1e1e1e;
+	--color-code-text: #d4d4d4;
+
+	/* Input colors */
+	--color-input-bg: #1a1a1a;
+	--color-input-border: #374151;
+	--color-input-focus: #3b82f6;
+
+	/* Button colors */
+	--color-button-bg: #262626;
+	--color-button-hover: #333333;
+	--color-button-primary-bg: #3b82f6;
+	--color-button-primary-hover: #2563eb;
+	--color-button-primary-text: #ffffff;
+}
+
+/* Smooth transitions for theme changes */
+* {
+	transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Theme switcher animation */
+.theme-switcher {
+	transition: transform 0.3s ease;
+}
+
+.theme-switcher:hover {
+	transform: scale(1.1);
 }

@@ -285,7 +285,7 @@ const Relationships = ({
 			{error && <ErrorMessage message={error} />}
 			<Flex direction="column" gap="size-100">
 				<Flex direction="column" gap="size-100" marginBottom="size-200" marginTop="size-200">
-					<h3 className="font-bold text-blue-500 dark:text-blue-400">Find the data elements that are used in a rule</h3>
+					<h3 className="font-bold text-[var(--color-link)]">Find the data elements that are used in a rule</h3>
 					<Text UNSAFE_className="mb-3 text-gray-600 dark:text-gray-400 italic font-light">
 						Where a rule uses the _satellite.getVar or %syntax% for data elements
 					</Text>
@@ -402,8 +402,8 @@ const Relationships = ({
 				<Divider size="S" />
 
 				<Flex direction="column" gap="size-100" marginBottom="size-200" marginTop="size-200">
-					<h3 className="font-bold text-blue-500 dark:text-blue-400">Find the rules where a data element is used</h3>
-					<Text UNSAFE_className="mb-3 text-gray-600 dark:text-gray-400 italic font-light">
+					<h3 className="font-bold text-[var(--color-link)]">Find the rules where a data element is used</h3>
+					<Text UNSAFE_className="mb-3 text-[var(--color-text-secondary)] italic font-light">
 						Where a data element is referenced in rules by _satellite.getVar or %syntax%
 					</Text>
 					<Flex direction="row" gap="size-200">

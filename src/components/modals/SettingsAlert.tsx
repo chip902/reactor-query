@@ -7,9 +7,9 @@ const SettingsAlert = () => {
             <InlineAlert variant="info">
                 <Heading>API Keys Needed</Heading>
                 <Content>
-                    You need to add your Launch API keys to use the app. Go to the {<Link className="underline" href="/settings">Settings</Link>} page to provide them.
+                    You need to add your Launch API keys to use the app. Go to the {<Link className="underline text-[var(--color-link)] hover:text-[var(--color-link-hover)]" href="/settings">Settings</Link>} page to provide them.
                     <br /><br />
-                    <small style={{ color: '#666' }}>
+                    <small style={{ color: 'var(--color-text-secondary)' }}>
                         Note: API keys are stored in your browser&apos;s session storage and will be cleared when you close the browser.
                     </small>
                 </Content>

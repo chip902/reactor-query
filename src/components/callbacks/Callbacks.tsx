@@ -95,7 +95,7 @@ const Callbacks = ({ selectedProperty, apiKeys }: {
                                 <Flex direction="column" gap="size-100">
                                     <Flex justifyContent="space-between" alignItems="center">
                                         <Text><strong>{callback.attributes.url || 'No URL specified'}</strong></Text>
-                                        <Text UNSAFE_className="text-sm text-gray-500">
+                                        <Text UNSAFE_className="text-sm text-[var(--color-text-secondary)]">
                                             ID: {callback.id}
                                         </Text>
                                     </Flex>

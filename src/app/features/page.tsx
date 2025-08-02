@@ -20,29 +20,29 @@ const Features = () => {
 					<div className="py-12 flex justify-center items-center">
 						<div>
 							<div className="text-center max-w-4xl mx-auto">
-								<h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+								<h1 className="text-4xl tracking-tight font-extrabold text-[var(--color-text-primary)] sm:text-5xl md:text-6xl">
 									<span className="block">Welcome to</span>
-									<span className="block text-blue-600">{PRODUCT_NAME}</span>
+									<span className="block text-[var(--color-link)]">{PRODUCT_NAME}</span>
 								</h1>
-								<p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-2xl sm:mx-auto md:mt-5 md:text-xl">
+								<p className="mt-3 text-base text-[var(--color-text-secondary)] sm:mt-5 sm:text-lg sm:max-w-2xl sm:mx-auto md:mt-5 md:text-xl">
 									Connect your Launch properties to {PRODUCT_NAME} to add what Launch is missing.
 								</p>
 								{/* CTA Buttons */}
 								<div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 max-w-2xl mx-auto">
 									<Link href="/" className="sm:w-1/3">
-										<button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg whitespace-nowrap">
+										<button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-[var(--color-button-primary-bg)] hover:bg-[var(--color-button-primary-hover)] md:py-4 md:text-lg whitespace-nowrap">
 											Start Searching
 											<Search UNSAFE_className="ml-2 h-5 w-5" />
 										</button>
 									</Link>
 									<Link href="/" className="sm:w-1/3">
-										<button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg whitespace-nowrap">
+										<button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-[var(--color-button-primary-bg)] hover:bg-[var(--color-button-primary-hover)] md:py-4 md:text-lg whitespace-nowrap">
 											View Relationships
 											<DataCorrelated UNSAFE_className="ml-2 h-5 w-5" />
 										</button>
 									</Link>
 									<Link href="#faq" className="sm:w-1/3">
-										<button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg whitespace-nowrap">
+										<button className="w-full flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-[var(--color-button-primary-text)] bg-[var(--color-button-bg)] hover:bg-[var(--color-button-hover)] md:py-4 md:text-lg whitespace-nowrap">
 											FAQ
 											<Question UNSAFE_className="ml-2 h-5 w-5" />
 										</button>
@@ -52,7 +52,7 @@ const Features = () => {
 							{/* Features */}
 							<div className="mt-16 w-full">
 								<div className="max-w-[1400px] mx-auto px-4">
-									<p className="text-lg font-medium text-gray-900 mb-6 text-center">Features:</p>
+									<p className="text-lg font-medium text-[var(--color-text-primary)] mb-6 text-center">Features:</p>
 									<div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-16 justify-items-start">
 										{[
 											"Better Search Experience",
@@ -64,7 +64,7 @@ const Features = () => {
 												<div className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded bg-blue-500 text-white">
 													<Checkmark UNSAFE_className="h-4 w-4" />
 												</div>
-												<p className="text-sm text-gray-500 whitespace-normal sm:whitespace-nowrap">{feature}</p>
+												<p className="text-sm text-[var(--color-text-secondary)] whitespace-normal sm:whitespace-nowrap">{feature}</p>
 											</div>
 										))}
 									</div>
@@ -78,7 +78,7 @@ const Features = () => {
 			<div className="py-12 bg-gray-50">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="text-center">
-						<h2 className="text-3xl font-bold text-gray-900 mb-8">Watch The Demo (coming soon!)</h2>
+						<h2 className="text-3xl font-bold text-[var(--color-text-primary)] mb-8">Watch The Demo (coming soon!)</h2>
 						<div className="max-w-3xl mx-auto rounded-lg overflow-hidden shadow-lg">
 							<div className="relative" style={{ paddingBottom: "56.25%" }}>
 								<iframe
@@ -104,9 +104,9 @@ const Features = () => {
 							<span className="block">with {PRODUCT_NAME}</span>
 						</h2>
 					</div>
-					<p className="mt-4 text-lg leading-6 text-blue-200">Discover how {PRODUCT_NAME} can improve your Adobe Launch workflow!</p>
+					<p className="mt-4 text-lg leading-6 text-[var(--color-link)]">Discover how {PRODUCT_NAME} can improve your Adobe Launch workflow!</p>
 					<Link href="/search">
-						<button className="mt-8 w-full inline-flex items-center justify-center px-5 py-3 text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 sm:w-auto">
+						<button className="mt-8 w-full inline-flex items-center justify-center px-5 py-3 text-base font-medium rounded-md text-[var(--color-button-primary-text)] bg-[var(--color-card)] hover:bg-[var(--color-card-hover)] sm:w-auto">
 							Get Started
 							<ArrowRight UNSAFE_className="ml-2 h-5 w-5" />
 						</button>
