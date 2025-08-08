@@ -3,7 +3,7 @@
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function ThemeTest() {
-  const { theme, resolvedTheme, toggleTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
 
   return (
     <div className="p-8 space-y-4">

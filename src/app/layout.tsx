@@ -2,8 +2,7 @@ import { ReactNode } from "react";
 import "./globals.css";
 import { ClientProviders } from "@/contexts/providers";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import NavigationBar from "@/components/nav/NavigationBar";
-import { FloatingThemeToggle } from "@/components/theme/ThemeSwitcher";
+import { MaterialThemeProvider } from "@/contexts/MuiThemeProvider";
 import { Metadata } from "next";
 import Footer from "@/components/footer/Footer";
 
@@ -30,12 +29,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			<body className="min-h-screen flex flex-col">
 				<ClientProviders>
 					<ThemeProvider>
-						<div className="flex flex-col min-h-screen">
-							<NavigationBar />
-							<PageContainer>{children}</PageContainer>
-							<Footer />
-							<FloatingThemeToggle />
-						</div>
+						<MaterialThemeProvider>
+							<div className="flex flex-col min-h-screen">
+								<PageContainer>{children}</PageContainer>
+								<Footer />
+							</div>
+						</MaterialThemeProvider>
 					</ThemeProvider>
 				</ClientProviders>
 			</body>

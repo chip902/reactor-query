@@ -1,23 +1,13 @@
 'use client';
-import SettingsForm from "@/components/forms/SettingsForm";
 
-import YoutubeEmbed from "@/components/YoutubeEmbed";
+import { ReactorQueryApplet } from "@/components/ReactorQueryApplet";
 
-
-const SettingsPage = () => {
+export default function SettingsPage() {
     return (
-        <>
-            <SettingsForm />
-            <div className="p-4 mt-8">
-                <div className="max-w-[640px]">
-                    <h2 className="text-2xl font-bold mb-4 text-[var(--color-text-primary)]">How to create your API keys</h2>
-                    <YoutubeEmbed videoId="5s65A_JFld8" title="Settings Video" />
-                </div>
-
-
-            </div>
-        </>
+        <ReactorQueryApplet 
+            title="Adobe Launch Tools"
+            maxHeight="90vh"
+            initialView="settings"
+        />
     );
 }
-
-export default SettingsPage;
