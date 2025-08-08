@@ -1,138 +1,190 @@
-import React, { useState, useEffect } from "react";
-import { Flex, Button, TextField, View, Text, ComboBox, Item, DialogTrigger, Dialog, Heading, ButtonGroup } from "@adobe/react-spectrum";
-import { createApiHeaders } from "@/lib/apiUtils";
-// Add gtag type declaration
-declare global {
-	interface Window {
-		gtag: (
-			command: string,
-			eventName: string,
-			eventParams?: {
-				event_category?: string;
-				event_label?: string;
-				value?: number;
-				[key: string]: string | number | boolean | undefined;
-			}
-		) => void;
-	}
-}
+import React, { useState, useEffect, useCallback } from "react";
+import {
+	Box,
+	Card,
+	CardContent,
+	Typography,
+	TextField,
+	Button,
+	Stack,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	Chip,
+	Alert,
+	LinearProgress,
+	Paper,
+	Divider,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
+	Collapse,
+	IconButton,
+	Snackbar,
+	Autocomplete,
+} from '@mui/material';
+import {
+	Search as SearchIcon,
+	FindReplace as FindReplaceIcon,
+	PlayArrow as PlayArrowIcon,
+	ExpandMore as ExpandMoreIcon,
+	ExpandLess as ExpandLessIcon,
+	CheckCircle as SuccessIcon,
+	Error as ErrorIcon,
+	Preview as PreviewIcon,
+} from '@mui/icons-material';
+import { createApiHeaders } from "@/lib/api-utils";
+import { useApiCache } from "@/app/hooks/useApiCache";
+import type { TruncatedReactorAPIResponseItem } from "@/lib/types";
 
 interface BulkRuleEditorProps {
-	selectedCompany: { id: string; name: string };
-	selectedProperty: { id: string; name: string };
 	apiKeys: { clientId: string; clientSecret: string; orgId: string } | null;
 }
 
-interface Environment {
+
+interface MatchedRule {
 	id: string;
 	name: string;
-	type: "development" | "staging" | "production";
+	matchedComponents: {
+		componentId: string;
+		componentName: string;
+		componentType: string;
+		originalSettings: string;
+		newSettings: string;
+		matches: string[];
+	}[];
 }
 
-const BulkRuleEditor = ({ selectedProperty, apiKeys }: BulkRuleEditorProps) => {
-	console.log("BulkRuleEditor rendered with selectedProperty:", selectedProperty);
+interface UpdateResult {
+	ruleId: string;
+	ruleName: string;
+	success: boolean;
+	error?: string;
+	updatedComponents: number;
+}
 
-	const [environments, setEnvironments] = useState<Environment[]>([]);
-	const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | null>(null);
+const BulkRuleEditor = ({ apiKeys }: BulkRuleEditorProps) => {
+	const { fetchCompanies, fetchProperties } = useApiCache();
+
+	// Company and Property Selection
+	const [companies, setCompanies] = useState<TruncatedReactorAPIResponseItem[]>([]);
+	const [selectedCompany, setSelectedCompany] = useState<{ id: string; name: string }>({ id: "", name: "" });
+	const [properties, setProperties] = useState<TruncatedReactorAPIResponseItem[]>([]);
+	const [selectedProperty, setSelectedProperty] = useState<{ id: string; name: string }>({ id: "", name: "" });
+	const [propertiesLoading, setPropertiesLoading] = useState(false);
+	const [companiesLoading, setCompaniesLoading] = useState(true);
+
+	// Core state
 	const [searchQuery, setSearchQuery] = useState("");
 	const [replaceQuery, setReplaceQuery] = useState("");
+	const [searchScope, setSearchScope] = useState<'all' | 'actions' | 'conditions' | 'events'>('actions');
 	const [isLoading, setIsLoading] = useState(false);
-	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-	const [matchingRules, setMatchingRules] = useState<Array<{ id: string; name: string; preview: string }>>([]);
 	const [isUpdating, setIsUpdating] = useState(false);
-	const [updateResults, setUpdateResults] = useState<{ success: string[]; failed: string[] }>({ success: [], failed: [] });
+	
+	// Results and UI state
+	const [matchedRules, setMatchedRules] = useState<MatchedRule[]>([]);
+	const [updateResults, setUpdateResults] = useState<UpdateResult[]>([]);
+	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 	const [isResultsDialogOpen, setIsResultsDialogOpen] = useState(false);
+	const [expandedRules, setExpandedRules] = useState<Set<string>>(new Set());
+	const [snackbarOpen, setSnackbarOpen] = useState(false);
+	const [snackbarMessage, setSnackbarMessage] = useState("");
+	const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
 
-	// Fetch environments for the selected property
+	// Helper functions
+	const showSnackbar = (message: string, severity: 'success' | 'error' | 'warning' | 'info' = 'info') => {
+		setSnackbarMessage(message);
+		setSnackbarSeverity(severity);
+		setSnackbarOpen(true);
+	};
+
+	const toggleRuleExpansion = (ruleId: string) => {
+		const newExpanded = new Set(expandedRules);
+		if (newExpanded.has(ruleId)) {
+			newExpanded.delete(ruleId);
+		} else {
+			newExpanded.add(ruleId);
+		}
+		setExpandedRules(newExpanded);
+	};
+
+	// Load companies and properties
+	const loadCompanies = useCallback(async () => {
+		if (!apiKeys) return;
+		setCompaniesLoading(true);
+		try {
+			const { data } = await fetchCompanies();
+			setCompanies(data);
+			if (data.length === 1) {
+				const company = data[0];
+				setSelectedCompany({ id: company.id, name: company.attributes.name });
+			}
+		} catch (_error) {
+			showSnackbar("Failed to fetch companies", 'error');
+		} finally {
+			setCompaniesLoading(false);
+		}
+	}, [fetchCompanies, apiKeys]);
+
+	const loadProperties = useCallback(async () => {
+		if (!selectedCompany.id || !apiKeys) return;
+
+		setPropertiesLoading(true);
+		try {
+			const { data } = await fetchProperties(selectedCompany.id);
+			setProperties(data);
+		} catch (_error) {
+			showSnackbar("Failed to fetch properties", 'error');
+		} finally {
+			setPropertiesLoading(false);
+		}
+	}, [selectedCompany.id, fetchProperties, apiKeys]);
+
 	useEffect(() => {
-		if (!selectedProperty?.id) {
-			console.log("No property selected, skipping environment fetch");
+		if (apiKeys) {
+			loadCompanies();
+		}
+	}, [loadCompanies, apiKeys]);
+
+	useEffect(() => {
+		if (selectedCompany.id && apiKeys) {
+			loadProperties();
+		} else {
+			setProperties([]);
+			setSelectedProperty({ id: "", name: "" });
+		}
+	}, [selectedCompany, loadProperties, apiKeys]);
+
+	// Find rules that match the search query by analyzing their components
+	const findMatchingRules = async () => {
+		if (!searchQuery.trim()) {
+			showSnackbar("Please enter a search term", 'warning');
 			return;
 		}
 
-		console.log("Fetching environments for property:", selectedProperty);
+		if (!selectedProperty?.id) {
+			showSnackbar("Please select a property first", 'warning');
+			return;
+		}
 
-		const fetchEnvironments = async () => {
-			try {
-				const response = await fetch("/api/reactor/listenvironments", {
-					method: "POST",
-					headers: createApiHeaders(apiKeys),
-					body: JSON.stringify({ propertyId: selectedProperty.id }),
-				});
-
-				console.log("Environments API response status:", response.status);
-
-				if (response.ok) {
-					const data = await response.json();
-					console.log("Raw environments data:", data);
-
-					const devEnvironments = data
-						.filter((env: { id: string; attributes: { stage: string } }) => {
-							const isDev = env.attributes.stage === "development";
-							console.log(`Environment ${env.id} stage: ${env.attributes.stage}, isDev: ${isDev}`);
-							return isDev;
-						})
-						.map((env: { id: string; attributes: { name: string; stage: string } }) => ({
-							id: env.id,
-							name: env.attributes.name,
-							type: "development" as const,
-						}));
-
-					console.log("Processed development environments:", devEnvironments);
-					setEnvironments(devEnvironments);
-
-					// Auto-select the first environment if available
-					if (devEnvironments.length > 0) {
-						console.log("Auto-selecting first environment:", devEnvironments[0]);
-						setSelectedEnvironment(devEnvironments[0]);
-					}
-				} else {
-					console.error("Failed to fetch environments:", await response.text());
-				}
-			} catch (error) {
-				console.error("Error fetching environments:", error);
-			}
-		};
-
-		fetchEnvironments();
-	}, [selectedProperty, apiKeys]);
-
-	// Find rules that match the search query
-	const findMatchingRules = async () => {
-		if (!searchQuery.trim() || !selectedEnvironment) return;
+		if (!apiKeys) {
+			showSnackbar("API keys are required", 'error');
+			return;
+		}
 
 		setIsLoading(true);
-		setMatchingRules([]);
+		setMatchedRules([]);
 
 		try {
-			// First, get all rules in the library for the selected environment
-			const libraryResponse = await fetch("/api/reactor/listlibraries", {
+			console.log("Searching for rules with pattern:", searchQuery);
+
+			// Get all rules for the property
+			const rulesResponse = await fetch("/api/reactor/listrules", {
 				method: "POST",
 				headers: createApiHeaders(apiKeys),
-				body: JSON.stringify({
-					environmentId: selectedEnvironment.id,
-					propertyId: selectedProperty.id,
-				}),
-			});
-
-			if (!libraryResponse.ok) {
-				throw new Error("Failed to fetch libraries");
-			}
-
-			const libraries = await libraryResponse.json();
-			const devLibrary = libraries.data.find(
-				(lib: { attributes: { environment: string } }) => lib.attributes.environment === `ENVIRONMENT_ID_${selectedEnvironment.id}`
-			);
-
-			if (!devLibrary) {
-				throw new Error("No development library found for the selected environment");
-			}
-
-			// Get rules in the development library
-			const rulesResponse = await fetch("/api/reactor/listrulesinlibrary", {
-				method: "POST",
-				headers: createApiHeaders(apiKeys),
-				body: JSON.stringify({ libraryId: devLibrary.id }),
+				body: JSON.stringify({ propertyId: selectedProperty.id }),
 			});
 
 			if (!rulesResponse.ok) {
@@ -140,190 +192,448 @@ const BulkRuleEditor = ({ selectedProperty, apiKeys }: BulkRuleEditorProps) => {
 			}
 
 			const rulesData = await rulesResponse.json();
+			console.log(`Found ${rulesData.length} rules to analyze`);
 
-			// Filter rules that match the search query
-			const matched = rulesData.data
-				.filter((rule: { attributes: object }) => JSON.stringify(rule.attributes).toLowerCase().includes(searchQuery.toLowerCase()))
-				.map((rule: { id: string; attributes: { name: string } }) => ({
-					id: rule.id,
-					name: rule.attributes.name,
-					preview: JSON.stringify(rule.attributes, null, 2),
-				}));
+			const matchedRulesArray: MatchedRule[] = [];
 
-			setMatchingRules(matched);
+			// Analyze each rule for matches
+			for (const rule of rulesData) {
+				try {
+					// Get components for this rule
+					const componentsResponse = await fetch("/api/reactor/listcomponentsforrule", {
+						method: "POST",
+						headers: createApiHeaders(apiKeys),
+						body: JSON.stringify({ ruleId: rule.id }),
+					});
+
+					if (!componentsResponse.ok) {
+						console.warn(`Failed to fetch components for rule ${rule.id}`);
+						continue;
+					}
+
+					const components = await componentsResponse.json();
+					const matchedComponents: MatchedRule['matchedComponents'] = [];
+
+					// Check each component for matches
+					for (const component of components) {
+						// Filter by search scope
+						const componentType = component.attributes.delegate_descriptor_id?.includes('::actions::') ? 'actions' :
+							component.attributes.delegate_descriptor_id?.includes('::conditions::') ? 'conditions' :
+							component.attributes.delegate_descriptor_id?.includes('::events::') ? 'events' : 'unknown';
+
+						if (searchScope !== 'all' && componentType !== searchScope) {
+							continue;
+						}
+
+						// Check if the component settings contain our search query
+						const settings = component.attributes.settings;
+						if (settings && typeof settings === 'string') {
+							try {
+								const settingsObj = JSON.parse(settings);
+								const settingsStr = JSON.stringify(settingsObj).toLowerCase();
+								
+								if (settingsStr.includes(searchQuery.toLowerCase())) {
+									// Find all matches for preview
+									const regex = new RegExp(searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+									const matches = settingsStr.match(regex) || [];
+									
+									// Create the new settings with replacements (only if replacement text provided)
+									let newSettings = settings;
+									if (replaceQuery.trim()) {
+										newSettings = settings.replace(new RegExp(searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), replaceQuery);
+									}
+
+									matchedComponents.push({
+										componentId: component.id,
+										componentName: component.attributes.name,
+										componentType: componentType,
+										originalSettings: settings,
+										newSettings: newSettings,
+										matches: matches
+									});
+								}
+							} catch (_parseError) {
+								console.warn(`Failed to parse settings for component ${component.id}`);
+							}
+						}
+					}
+
+					// If any components matched, add the rule
+					if (matchedComponents.length > 0) {
+						matchedRulesArray.push({
+							id: rule.id,
+							name: rule.attributes.name,
+							matchedComponents
+						});
+					}
+				} catch (error) {
+					console.warn(`Error analyzing rule ${rule.id}:`, error);
+				}
+			}
+
+			setMatchedRules(matchedRulesArray);
 			setIsPreviewOpen(true);
+			
+			showSnackbar(
+				`Found ${matchedRulesArray.length} rules with ${matchedRulesArray.reduce((sum, rule) => sum + rule.matchedComponents.length, 0)} matching components`,
+				'success'
+			);
+
 		} catch (error) {
 			console.error("Error finding matching rules:", error);
+			showSnackbar("Error searching rules. Please try again.", 'error');
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
-	// Update the matched rules with the replacement text
-	const updateRules = async () => {
-		if (!selectedEnvironment || !searchQuery.trim() || !replaceQuery.trim() || matchingRules.length === 0) return;
+	// Execute the bulk updates
+	const executeUpdates = async () => {
+		if (!replaceQuery.trim()) {
+			showSnackbar("Please enter replacement text to proceed with updates", 'warning');
+			return;
+		}
+
+		if (matchedRules.length === 0) {
+			showSnackbar("No matching rules found. Please search first.", 'warning');
+			return;
+		}
+
+		if (!apiKeys) {
+			showSnackbar("API keys are required", 'error');
+			return;
+		}
 
 		setIsUpdating(true);
-		setUpdateResults({ success: [], failed: [] });
+		setUpdateResults([]);
 
 		try {
-			const results = { success: [] as string[], failed: [] as string[] };
+			const results: UpdateResult[] = [];
 
-			// In a real implementation, we would update each rule here
-			// This is a simplified example that doesn't actually modify the rules
-			for (const rule of matchingRules) {
+			for (const rule of matchedRules) {
+				let updatedComponents = 0;
+				let ruleUpdateSuccess = true;
+				let ruleError = '';
+
 				try {
-					// Simulate API call to update the rule
-					// const response = await fetch(`/api/reactor/updaterule`, {
-					//   method: 'PATCH',
-					//   headers: createApiHeaders(apiKeys),
-					//   body: JSON.stringify({
-					//     ruleId: rule.id,
-					//     updates: {
-					//       // Apply the find/replace logic here
-					//       // This is a simplified example
-					//       settings: rule.preview.replace(new RegExp(searchQuery, 'gi'), replaceQuery)
-					//     }
-					// }),
-					// });
+					// Update each matched component in this rule
+					for (const matchedComponent of rule.matchedComponents) {
+						try {
+							const updateResponse = await fetch("/api/reactor/updaterulecomponent", {
+								method: "POST",
+								headers: createApiHeaders(apiKeys),
+								body: JSON.stringify({
+									componentId: matchedComponent.componentId,
+									updates: {
+										settings: matchedComponent.newSettings
+									},
+									revise: true
+								}),
+							});
 
-					// if (response.ok) {
-					//   results.success.push(rule.name);
-					// } else {
-					//   results.failed.push(rule.name);
-					// }
+							if (!updateResponse.ok) {
+								const errorData = await updateResponse.json();
+								throw new Error(errorData.error || "Failed to update component");
+							}
 
-					// For demo purposes, we'll just simulate success
-					results.success.push(rule.name);
+							const result = await updateResponse.json();
+							if (result.success) {
+								updatedComponents++;
+								console.log(`Updated component ${matchedComponent.componentId} in rule ${rule.name}`);
+							} else {
+								throw new Error(result.error || "Update failed");
+							}
+						} catch (componentError) {
+							console.error(`Error updating component ${matchedComponent.componentId}:`, componentError);
+							ruleUpdateSuccess = false;
+							ruleError = componentError instanceof Error ? componentError.message : "Component update failed";
+						}
+					}
+
+					results.push({
+						ruleId: rule.id,
+						ruleName: rule.name,
+						success: ruleUpdateSuccess,
+						error: ruleUpdateSuccess ? undefined : ruleError,
+						updatedComponents
+					});
+
 				} catch (error) {
 					console.error(`Error updating rule ${rule.name}:`, error);
-					results.failed.push(rule.name);
+					results.push({
+						ruleId: rule.id,
+						ruleName: rule.name,
+						success: false,
+						error: error instanceof Error ? error.message : "Unknown error",
+						updatedComponents: 0
+					});
 				}
 			}
 
 			setUpdateResults(results);
 			setIsResultsDialogOpen(true);
+			setIsPreviewOpen(false);
+
+			// Show summary
+			const successful = results.filter(r => r.success).length;
+			const failed = results.length - successful;
+			const totalComponents = results.reduce((sum, r) => sum + r.updatedComponents, 0);
+
+			if (failed === 0) {
+				showSnackbar(`Successfully updated ${successful} rules (${totalComponents} components)`, 'success');
+			} else if (successful === 0) {
+				showSnackbar(`Failed to update all ${failed} rules`, 'error');
+			} else {
+				showSnackbar(`Updated ${successful} rules, ${failed} failed (${totalComponents} total components)`, 'warning');
+			}
+
 		} catch (error) {
-			console.error("Error updating rules:", error);
+			console.error("Error executing updates:", error);
+			showSnackbar("Error executing updates. Please try again.", 'error');
 		} finally {
 			setIsUpdating(false);
 		}
 	};
 
 	return (
-		<View padding="size-300">
-			<Flex direction="column" gap="size-200">
-				<Heading level={3}>Bulk Edit Rules</Heading>
-				<Text UNSAFE_style={{ color: "var(--spectrum-global-color-gray-900)" }}>Update multiple rules in your development environment at once.</Text>
+		<Box sx={{ p: 3 }}>
+			<Card sx={{ mb: 3 }}>
+				<CardContent>
+					<Typography variant="h4" gutterBottom>
+						<FindReplaceIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+						Bulk Rule Editor
+					</Typography>
+					<Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+						Find and replace text across multiple rule components. Perfect for updating Pixel IDs, tracking codes, and other configuration values.
+					</Typography>
 
-				<Flex direction="column" gap="size-150">
-					<ComboBox
-						label="Select Development Environment"
-						items={environments}
-						selectedKey={selectedEnvironment?.id}
-						onSelectionChange={(key) => {
-							const env = environments.find((e) => e.id === key);
-							console.log("Selected environment changed:", env);
-							setSelectedEnvironment(env || null);
-						}}
-						isDisabled={environments.length === 0}>
-						{(item) => <Item key={item.id}>{item.name}</Item>}
-					</ComboBox>
+					<Stack spacing={3}>
+						{/* Company and Property Selection */}
+						{!apiKeys ? (
+							<Alert severity="info">
+								Please configure your API keys in Settings to use the Bulk Edit feature.
+							</Alert>
+						) : (
+							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+								<Autocomplete
+									fullWidth
+									loading={companiesLoading}
+									options={companies}
+									value={selectedCompany.id ? companies.find(c => c.id === selectedCompany.id) || null : null}
+									onChange={(_, value) => {
+										setSelectedCompany(value ? { id: value.id, name: value.attributes.name } : { id: "", name: "" });
+									}}
+									getOptionLabel={(option) => option.attributes.name}
+									renderInput={(params) => (
+										<TextField {...params} label="Select Company" variant="outlined" />
+									)}
+									disabled={companiesLoading || !apiKeys}
+								/>
 
-					<TextField label="Find" value={searchQuery} onChange={setSearchQuery} placeholder="Text or pattern to find in rules" isRequired />
+								<Autocomplete
+									fullWidth
+									loading={propertiesLoading}
+									options={properties}
+									value={selectedProperty.id ? properties.find(p => p.id === selectedProperty.id) || null : null}
+									onChange={(_, value) => {
+										setSelectedProperty(value ? { id: value.id, name: value.attributes.name } : { id: "", name: "" });
+									}}
+									getOptionLabel={(option) => option.attributes.name}
+									renderInput={(params) => (
+										<TextField {...params} label="Select Property" variant="outlined" />
+									)}
+									disabled={!selectedCompany.id || propertiesLoading || !apiKeys}
+								/>
+							</Stack>
+						)}
 
-					<TextField label="Replace With" value={replaceQuery} onChange={setReplaceQuery} placeholder="Replacement text" isRequired />
+						{/* Search Configuration */}
+						<Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+							<TextField
+								fullWidth
+								label="Find"
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								placeholder="Text to find (e.g., old-pixel-id)"
+								required
+								InputProps={{
+									startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+								}}
+							/>
+							
+							<TextField
+								fullWidth
+								label="Replace With (Optional)"
+								value={replaceQuery}
+								onChange={(e) => setReplaceQuery(e.target.value)}
+								placeholder="Replacement text (leave empty to just search)"
+								helperText="Leave empty to preview matches without making changes"
+								InputProps={{
+									startAdornment: <FindReplaceIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+								}}
+							/>
+						</Stack>
 
-					<ButtonGroup>
-						<Button variant="primary" onPress={findMatchingRules} isDisabled={!selectedEnvironment || !searchQuery.trim() || isLoading}>
-							{isLoading ? "Searching..." : "Preview Changes"}
-						</Button>
+						{/* Search Scope */}
+						<FormControl sx={{ minWidth: 200 }}>
+							<InputLabel>Search Scope</InputLabel>
+							<Select
+								value={searchScope}
+								onChange={(e) => setSearchScope(e.target.value as typeof searchScope)}
+								label="Search Scope"
+							>
+								<MenuItem value="all">All Components</MenuItem>
+								<MenuItem value="actions">Actions Only</MenuItem>
+								<MenuItem value="conditions">Conditions Only</MenuItem>
+								<MenuItem value="events">Events Only</MenuItem>
+							</Select>
+						</FormControl>
 
-						<Button variant="cta" onPress={updateRules} isDisabled={!replaceQuery.trim() || matchingRules.length === 0 || isUpdating}>
-							{isUpdating ? "Updating..." : `Update ${matchingRules.length} Rules`}
-						</Button>
-					</ButtonGroup>
+						{/* Action Buttons */}
+						<Stack direction="row" spacing={2}>
+							<Button
+								variant="outlined"
+								size="large"
+								startIcon={isLoading ? <LinearProgress sx={{ width: 20 }} /> : <PreviewIcon />}
+								onClick={findMatchingRules}
+								disabled={!searchQuery.trim() || isLoading}
+								sx={{ minWidth: 200 }}
+							>
+								{isLoading ? "Searching..." : "Find & Preview"}
+							</Button>
 
-					{/* Preview Dialog */}
-					<DialogTrigger isOpen={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-						<div />
-						<Dialog>
-							<Heading>Preview Changes</Heading>
-							<View>
-								<Text>Found {matchingRules.length} rules matching your search.</Text>
-								<View marginY="size-200">
-									<Text>
-										Find: <strong>{searchQuery}</strong>
-									</Text>
-									<Text>
-										Replace with: <strong>{replaceQuery}</strong>
-									</Text>
-								</View>
+							<Button
+								variant="contained"
+								size="large"
+								startIcon={<PlayArrowIcon />}
+								onClick={executeUpdates}
+								disabled={!replaceQuery.trim() || matchedRules.length === 0 || isUpdating}
+								sx={{ minWidth: 200 }}
+							>
+								{isUpdating ? "Updating..." : `Update ${matchedRules.length} Rules`}
+							</Button>
+						</Stack>
 
-								{matchingRules.length > 0 && (
-									<View marginTop="size-200">
-										<Text>Rules that will be updated:</Text>
-										<ul>
-											{matchingRules.slice(0, 10).map((rule) => (
-												<li key={rule.id}>
-													<Text>{rule.name}</Text>
-												</li>
+						{/* Progress Indicator */}
+						{isLoading && <LinearProgress />}
+					</Stack>
+				</CardContent>
+			</Card>
+
+			{/* Preview Dialog */}
+			<Dialog open={isPreviewOpen} onClose={() => setIsPreviewOpen(false)} maxWidth="md" fullWidth>
+				<DialogTitle>
+					Preview Changes
+					<Typography variant="body2" color="text.secondary">
+						Found {matchedRules.length} rules with {matchedRules.reduce((sum, rule) => sum + rule.matchedComponents.length, 0)} matching components
+					</Typography>
+				</DialogTitle>
+				<DialogContent>
+					<Stack spacing={2} sx={{ mt: 1 }}>
+						<Paper sx={{ p: 2, backgroundColor: 'background.default' }}>
+							<Typography variant="subtitle2" gutterBottom>Changes to be made:</Typography>
+							<Stack direction="row" spacing={2} alignItems="center">
+								<Chip label={`Find: "${searchQuery}"`} variant="outlined" />
+								<Typography variant="body2">→</Typography>
+								<Chip label={`Replace: "${replaceQuery}"`} color="primary" />
+							</Stack>
+						</Paper>
+
+						{matchedRules.map((rule) => (
+							<Card key={rule.id} variant="outlined">
+								<CardContent>
+									<Stack direction="row" justifyContent="space-between" alignItems="center">
+										<Box>
+											<Typography variant="h6">{rule.name}</Typography>
+											<Typography variant="body2" color="text.secondary">
+												{rule.matchedComponents.length} component{rule.matchedComponents.length !== 1 ? 's' : ''} will be updated
+											</Typography>
+										</Box>
+										<IconButton onClick={() => toggleRuleExpansion(rule.id)}>
+											{expandedRules.has(rule.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+										</IconButton>
+									</Stack>
+
+									<Collapse in={expandedRules.has(rule.id)}>
+										<Divider sx={{ my: 2 }} />
+										<Stack spacing={2}>
+											{rule.matchedComponents.map((component) => (
+												<Paper key={component.componentId} sx={{ p: 2, backgroundColor: 'background.default' }}>
+													<Typography variant="subtitle2" gutterBottom>
+														{component.componentName} ({component.componentType})
+													</Typography>
+													<Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+														{component.matches.length} match{component.matches.length !== 1 ? 'es' : ''} found
+													</Typography>
+													<Stack spacing={1}>
+														<Typography variant="caption">Original:</Typography>
+														<Paper sx={{ p: 1, backgroundColor: 'error.50', maxHeight: 100, overflow: 'auto' }}>
+															<pre style={{ margin: 0, fontSize: '0.75rem', whiteSpace: 'pre-wrap' }}>
+																{component.originalSettings}
+															</pre>
+														</Paper>
+														<Typography variant="caption">After changes:</Typography>
+														<Paper sx={{ p: 1, backgroundColor: 'success.50', maxHeight: 100, overflow: 'auto' }}>
+															<pre style={{ margin: 0, fontSize: '0.75rem', whiteSpace: 'pre-wrap' }}>
+																{component.newSettings}
+															</pre>
+														</Paper>
+													</Stack>
+												</Paper>
 											))}
-											{matchingRules.length > 10 && <li>...and {matchingRules.length - 10} more</li>}
-										</ul>
-									</View>
-								)}
-							</View>
-							<ButtonGroup>
-								<Button variant="secondary" onPress={() => setIsPreviewOpen(false)}>
-									<Text>Close</Text>
-								</Button>
-								<Button
-									variant="cta"
-									onPress={() => {
-										setIsPreviewOpen(false);
-										updateRules();
-									}}>
-									<Text>Apply Changes</Text>
-								</Button>
-							</ButtonGroup>
-						</Dialog>
-					</DialogTrigger>
+										</Stack>
+									</Collapse>
+								</CardContent>
+							</Card>
+						))}
+					</Stack>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setIsPreviewOpen(false)}>Cancel</Button>
+					<Button variant="contained" onClick={executeUpdates} disabled={isUpdating || !replaceQuery.trim()}>
+						Apply Changes
+					</Button>
+				</DialogActions>
+			</Dialog>
 
-					{/* Results Dialog */}
-					<DialogTrigger isOpen={isResultsDialogOpen} onOpenChange={setIsResultsDialogOpen}>
-						<div />
-						<Dialog>
-							<Heading>Update Results</Heading>
-							<View>
-								<View marginBottom="size-200">
-									<Text>Successfully updated {updateResults.success.length} rules.</Text>
-									{updateResults.failed.length > 0 && <Text>Failed to update {updateResults.failed.length} rules.</Text>}
-								</View>
+			{/* Results Dialog */}
+			<Dialog open={isResultsDialogOpen} onClose={() => setIsResultsDialogOpen(false)} maxWidth="sm" fullWidth>
+				<DialogTitle>Update Results</DialogTitle>
+				<DialogContent>
+					<Stack spacing={2}>
+						{updateResults.map((result) => (
+							<Stack key={result.ruleId} direction="row" spacing={2} alignItems="center">
+								{result.success ? <SuccessIcon color="success" /> : <ErrorIcon color="error" />}
+								<Box sx={{ flex: 1 }}>
+									<Typography variant="body1">{result.ruleName}</Typography>
+									<Typography variant="caption" color="text.secondary">
+										{result.success 
+											? `${result.updatedComponents} component${result.updatedComponents !== 1 ? 's' : ''} updated`
+											: result.error
+										}
+									</Typography>
+								</Box>
+							</Stack>
+						))}
+					</Stack>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setIsResultsDialogOpen(false)}>Close</Button>
+				</DialogActions>
+			</Dialog>
 
-								{updateResults.failed.length > 0 && (
-									<View marginTop="size-200">
-										<Text>Failed updates:</Text>
-										<ul>
-											{updateResults.failed.map((ruleName, index) => (
-												<li key={index}>
-													<Text>{ruleName}</Text>
-												</li>
-											))}
-										</ul>
-									</View>
-								)}
-							</View>
-							<ButtonGroup>
-								<Button variant="secondary" onPress={() => setIsResultsDialogOpen(false)}>
-									<Text>Close</Text>
-								</Button>
-							</ButtonGroup>
-						</Dialog>
-					</DialogTrigger>
-				</Flex>
-			</Flex>
-		</View>
+			{/* Snackbar for notifications */}
+			<Snackbar
+				open={snackbarOpen}
+				autoHideDuration={6000}
+				onClose={() => setSnackbarOpen(false)}
+				anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+			>
+				<Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
+					{snackbarMessage}
+				</Alert>
+			</Snackbar>
+		</Box>
 	);
 };
 

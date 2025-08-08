@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import {
 	Box,
 	Typography,
@@ -128,28 +127,12 @@ interface ReactorQueryAppletProps {
 }
 
 function BulkEditContent() {
-	const searchParams = useSearchParams();
-	const companyId = searchParams?.get("companyId");
-	const companyName = searchParams?.get("companyName");
-	const propertyId = searchParams?.get("propertyId");
-	const propertyName = searchParams?.get("propertyName");
-
-	const [selectedCompany] = useState({
-		id: companyId || "",
-		name: companyName || "",
-	});
-
-	const [selectedProperty] = useState({
-		id: propertyId || "",
-		name: propertyName || "",
-	});
-
 	const { apiKeys } = useApiKeys();
 
 	return (
 		<>
 			{apiKeys ? (
-				<BulkRuleEditor selectedCompany={selectedCompany} selectedProperty={selectedProperty} apiKeys={apiKeys} />
+				<BulkRuleEditor apiKeys={apiKeys} />
 			) : (
 				<Alert severity="warning">
 					Please configure your API keys in Settings to use the Bulk Edit feature.

@@ -1,26 +1,51 @@
-# The Perpetua Digital Assistant
+# Adobe Launch Tools - Reactor Query
 
-This interactive tool helps you work with [Adobe's Reactor API](https://developer.adobe.com/experience-platform-apis/references/reactor/). It's built with [Next.js](https://nextjs.org) and hosted via Vercel. It provides a user-friendly interface for making API calls using your Adobe Launch API credentials. No user data or Launch Property data is stored in a database or on the server.
+This interactive tool helps you work with [Adobe's Reactor API](https://developer.adobe.com/experience-platform-apis/references/reactor/). It's built with [Next.js](https://nextjs.org) and provides a comprehensive suite of tools for managing Adobe Launch properties. The application is designed as an embeddable component using Material-UI design system and can be integrated into other Next.js frontends.
+
+## Key Features
+
+### 🔍 **Search Tools**
+- **Text Search**: Full-text search across rules, data elements, and extensions
+- **Extension Filter**: Search by specific extension usage across properties
+- **Rule ID Search**: Direct rule lookup by ID with revision history
+- **Export to CSV**: Download search results for analysis
+
+### 📊 **Property Scanner**
+- Comprehensive property analysis with rule execution order visualization
+- Expandable rule components and data elements with JSON views
+- Rule execution flow analysis (Library Loaded → Page Bottom → Window Loaded → DOM Ready)
+- Dark mode compatible code block display
+
+### ✏️ **Bulk Rule Editor**
+- Find and replace functionality across multiple rule components
+- Search-only mode for pattern analysis without making changes
+- Component-level filtering (actions, conditions, events, or all)
+- Real-time preview of changes before applying updates
+- Bidirectional data flow for safe bulk operations
+
+### ⚙️ **Additional Tools**
+- Publish History tracking
+- Library Export functionality
+- Relationship analysis between rules and components
+- Callback management
+- API key management with secure credential handling
 
 ## Architecture
-![Architecture Diagram](/public/images/architecture.png)
-[Draw.io Diagram Link](https://drive.google.com/file/d/16ZAGvFH4pYcptr5295Mp9KG376mWRabb/view?usp=sharing)
 
-## Why an API Layer?
-There are 3 main reasons that an API layer is needed:
-1. The Launch/Reactor API cannot be called directly from the front end of a website due to CORS restrictions.
-2. The backend can use the Reactor Node SDK to make the API calls rather than building them from scratch. This greatly simplifies the code.
-3. The Launch/Reactor API sends back a lot of unnecessary data. It is more practical to call the Reactor API on the backend, format the data, and return only what is needed to the front end.
+The application is built as a self-contained embeddable component (`ReactorQueryApplet`) that consolidates all functionality into a single component for easy integration into other Next.js applications.
 
 ### Front end
-The front end is built with Next.js and React. The styles are a mixture of [Tailwind CSS](https://tailwindcss.com/) and [Adobe React Spectrum](https://react-spectrum.adobe.com/react-spectrum/getting-started.html).
+- **Next.js 15** with App Router
+- **Material-UI v7** design system with Emotion styling
+- **React** with TypeScript for type safety
+- **Theme Provider** for dark/light mode support
 
 ### Back end
-The back end is built with [Vercel](https://vercel.com) and [Next.js](https://nextjs.org).
-`Assistant` is a subdomain of `perpetua.digital` which is hosted on Squarespace. 
-I would like to transfer this to Vercel at some point. 
+- **Vercel** hosting with Next.js API routes
+- **Adobe Reactor SDK** for Launch API integration
+- **No database storage** - all data is ephemeral and sourced directly from Adobe Launch API
 
-**There is no database storage of user data, nor should there be. The goal of this tool is to be a front end for interacting with the Launch API.**
+**Privacy-First Design**: No user data or Launch Property data is stored in a database or on the server. All credentials are handled securely and never persisted.
 
 ### Building & Deployment
 The project will build and deploy immediately on Vercel whenever the `main` branch is updated.

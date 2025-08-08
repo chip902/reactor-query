@@ -4,7 +4,6 @@ import React from 'react';
 import { 
   Box, 
   Typography, 
-  Grid, 
   Card, 
   CardContent, 
   Button, 
@@ -30,9 +29,9 @@ export function AppletExample() {
         This demonstrates how to embed the ReactorQuery Applet alongside your existing content.
       </Typography>
 
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
         {/* Left column - Your existing content */}
-        <Grid item xs={12} md={4}>
+        <Box sx={{ flex: { xs: 'none', md: '0 0 300px' } }}>
           <Stack spacing={3}>
             <Card>
               <CardContent>
@@ -94,17 +93,17 @@ export function AppletExample() {
               </CardContent>
             </Card>
           </Stack>
-        </Grid>
+        </Box>
 
         {/* Right column - ReactorQuery Applet */}
-        <Grid item xs={12} md={8}>
+        <Box sx={{ flex: 1 }}>
           <ReactorQueryApplet 
             title="Adobe Launch Tools"
             maxHeight="85vh"
             initialView={currentView}
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 }

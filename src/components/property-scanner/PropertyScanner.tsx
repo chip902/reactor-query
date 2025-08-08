@@ -110,6 +110,8 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
   const [tabValue, setTabValue] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedRules, setExpandedRules] = useState<Set<string>>(new Set());
+  const [expandedComponents, setExpandedComponents] = useState<Set<string>>(new Set());
+  const [expandedDataElements, setExpandedDataElements] = useState<Set<string>>(new Set());
 
   // Load companies on mount
   useEffect(() => {
@@ -201,11 +203,215 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
     setExpandedRules(newExpanded);
   };
 
+  const toggleComponentExpansion = (componentId: string) => {
+    const newExpanded = new Set(expandedComponents);
+    if (newExpanded.has(componentId)) {
+      newExpanded.delete(componentId);
+    } else {
+      newExpanded.add(componentId);
+    }
+    setExpandedComponents(newExpanded);
+  };
+
+  const toggleDataElementExpansion = (dataElementId: string) => {
+    const newExpanded = new Set(expandedDataElements);
+    if (newExpanded.has(dataElementId)) {
+      newExpanded.delete(dataElementId);
+    } else {
+      newExpanded.add(dataElementId);
+    }
+    setExpandedDataElements(newExpanded);
+  };
+
   const filterRules = (rules: RuleWithComponents[]) => {
     if (!searchQuery) return rules;
     return rules.filter(rule => 
       rule.attributes.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       rule.id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
+  const renderComponentGroup = (components: TruncatedReactorAPIResponseItem[], title: string, icon: React.ReactNode, color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' = 'primary') => {
+    if (components.length === 0) return null;
+
+    return (
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+          {icon}
+          {title} ({components.length})
+        </Typography>
+        <Stack spacing={2}>
+          {components.map(comp => {
+            const isExpanded = expandedComponents.has(comp.id);
+            const [extension, type, action] = comp.attributes.delegate_descriptor_id?.split('::') || [];
+            
+            return (
+              <Paper key={comp.id} sx={{ p: 2, backgroundColor: 'background.default' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="subtitle1" gutterBottom>
+                      {comp.attributes.name}
+                    </Typography>
+                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                      <Chip label={`ID: ${comp.id}`} size="small" variant="outlined" />
+                      {extension && <Chip label={extension} size="small" color="info" />}
+                      {type && <Chip label={type} size="small" color={color} variant="outlined" />}
+                      {action && <Chip label={action} size="small" color="secondary" />}
+                    </Stack>
+                  </Box>
+                  <IconButton onClick={() => toggleComponentExpansion(comp.id)} size="small">
+                    {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  </IconButton>
+                </Box>
+                
+                <Collapse in={isExpanded}>
+                  <Divider sx={{ my: 2 }} />
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                      Component Details
+                    </Typography>
+                    <Paper 
+                      sx={{ 
+                        p: 2, 
+                        backgroundColor: (theme) => theme.palette.mode === 'dark' 
+                          ? 'grey.900' 
+                          : 'grey.50',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        maxHeight: 400,
+                        overflow: 'auto'
+                      }}
+                    >
+                      <pre style={{ 
+                        margin: 0, 
+                        fontSize: '0.75rem', 
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        fontFamily: 'Monaco, Consolas, "Courier New", monospace',
+                        color: 'inherit'
+                      }}>
+                        {JSON.stringify(comp.attributes, null, 2)}
+                      </pre>
+                    </Paper>
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Created: {new Date(comp.attributes.created_at).toLocaleString()}
+                      </Typography>
+                      <br />
+                      <Typography variant="caption" color="text.secondary">
+                        Updated: {new Date(comp.attributes.updated_at).toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Collapse>
+              </Paper>
+            );
+          })}
+        </Stack>
+      </Box>
+    );
+  };
+
+  const renderDataElementCard = (dataElement: TruncatedReactorAPIResponseItem) => {
+    const isExpanded = expandedDataElements.has(dataElement.id);
+    const [extension, type] = dataElement.attributes.delegate_descriptor_id?.split('::') || [];
+
+    return (
+      <Card key={dataElement.id} sx={{ mb: 2, elevation: 2 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h6" component="div" gutterBottom>
+                {dataElement.attributes.name}
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                <Chip 
+                  label={`ID: ${dataElement.id}`} 
+                  size="small" 
+                  variant="outlined"
+                />
+                {extension && <Chip label={extension} size="small" color="info" />}
+                {type && <Chip label={type} size="small" color="primary" variant="outlined" />}
+                <Chip 
+                  label={`Rev: ${'revision_number' in dataElement.attributes ? dataElement.attributes.revision_number : 'Current'}`} 
+                  size="small" 
+                  variant="outlined"
+                />
+              </Stack>
+            </Box>
+            <IconButton onClick={() => toggleDataElementExpansion(dataElement.id)}>
+              {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Box>
+          
+          <Collapse in={isExpanded}>
+            <Divider sx={{ my: 2 }} />
+            
+            {/* Data Element Details */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                <StorageIcon sx={{ fontSize: 16, mr: 1, verticalAlign: 'middle' }} />
+                Data Element Information
+              </Typography>
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                {dataElement.attributes.delegate_descriptor_id && (
+                  <Chip 
+                    label={`Type: ${dataElement.attributes.delegate_descriptor_id.split('::').pop()}`} 
+                    size="small" 
+                    color="secondary"
+                  />
+                )}
+                {'enabled' in dataElement.attributes && (
+                  <Chip 
+                    label={dataElement.attributes.enabled === false ? 'Disabled' : 'Enabled'} 
+                    size="small" 
+                    color={dataElement.attributes.enabled === false ? 'warning' : 'success'}
+                  />
+                )}
+              </Stack>
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Created: {new Date(dataElement.attributes.created_at).toLocaleString()}
+                </Typography>
+                <br />
+                <Typography variant="caption" color="text.secondary">
+                  Updated: {new Date(dataElement.attributes.updated_at).toLocaleString()}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Data Element JSON Details */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                Configuration Details
+              </Typography>
+              <Paper 
+                sx={{ 
+                  p: 2, 
+                  backgroundColor: (theme) => theme.palette.mode === 'dark' 
+                    ? 'grey.900' 
+                    : 'grey.50',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  maxHeight: 400,
+                  overflow: 'auto'
+                }}
+              >
+                <pre style={{ 
+                  margin: 0, 
+                  fontSize: '0.75rem', 
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  fontFamily: 'Monaco, Consolas, "Courier New", monospace',
+                  color: 'inherit'
+                }}>
+                  {JSON.stringify(dataElement.attributes, null, 2)}
+                </pre>
+              </Paper>
+            </Box>
+          </Collapse>
+        </CardContent>
+      </Card>
     );
   };
 
@@ -258,76 +464,56 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
           <Collapse in={isExpanded}>
             <Divider sx={{ my: 2 }} />
             
-            {eventComponents.length > 0 && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                  <ScheduleIcon sx={{ fontSize: 16, mr: 1, verticalAlign: 'middle' }} />
-                  Events ({eventComponents.length})
-                </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                  {eventComponents.map(comp => (
-                    <Chip 
-                      key={comp.id}
-                      label={comp.attributes.delegate_descriptor_id?.split('::').pop() || 'Unknown'}
-                      size="small"
-                      sx={{ mt: 0.5 }}
-                    />
-                  ))}
-                </Stack>
-              </Box>
-            )}
-            
-            {conditionComponents.length > 0 && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                  <CallSplitIcon sx={{ fontSize: 16, mr: 1, verticalAlign: 'middle' }} />
-                  Conditions ({conditionComponents.length})
-                </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                  {conditionComponents.map(comp => (
-                    <Chip 
-                      key={comp.id}
-                      label={comp.attributes.delegate_descriptor_id?.split('::').pop() || 'Unknown'}
-                      size="small"
-                      color="secondary"
-                      variant="outlined"
-                      sx={{ mt: 0.5 }}
-                    />
-                  ))}
-                </Stack>
-              </Box>
-            )}
-            
-            {actionComponents.length > 0 && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                  <PlayArrowIcon sx={{ fontSize: 16, mr: 1, verticalAlign: 'middle' }} />
-                  Actions ({actionComponents.length})
-                </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                  {actionComponents.map(comp => (
-                    <Chip 
-                      key={comp.id}
-                      label={comp.attributes.delegate_descriptor_id?.split('::').pop() || 'Unknown'}
-                      size="small"
-                      color="success"
-                      variant="outlined"
-                      sx={{ mt: 0.5 }}
-                    />
-                  ))}
-                </Stack>
-              </Box>
-            )}
-            
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="caption" color="text.secondary">
-                Created: {new Date(rule.attributes.created_at).toLocaleString()}
+            {/* Rule Details */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                Rule Information
               </Typography>
-              <br />
-              <Typography variant="caption" color="text.secondary">
-                Updated: {new Date(rule.attributes.updated_at).toLocaleString()}
-              </Typography>
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                <Chip 
+                  label={rule.attributes.enabled ? 'Enabled' : 'Disabled'} 
+                  size="small" 
+                  color={rule.attributes.enabled ? 'success' : 'warning'}
+                />
+                <Chip 
+                  label={`Rev: ${'revision_number' in rule.attributes ? rule.attributes.revision_number : 'Current'}`} 
+                  size="small" 
+                  variant="outlined"
+                />
+              </Stack>
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Created: {new Date(rule.attributes.created_at).toLocaleString()}
+                </Typography>
+                <br />
+                <Typography variant="caption" color="text.secondary">
+                  Updated: {new Date(rule.attributes.updated_at).toLocaleString()}
+                </Typography>
+              </Box>
             </Box>
+
+            {/* Rule Components */}
+            {renderComponentGroup(
+              eventComponents, 
+              'Events', 
+              <ScheduleIcon sx={{ fontSize: 16, mr: 1 }} />,
+              'info'
+            )}
+            
+            {renderComponentGroup(
+              conditionComponents, 
+              'Conditions', 
+              <CallSplitIcon sx={{ fontSize: 16, mr: 1 }} />,
+              'secondary'
+            )}
+            
+            {renderComponentGroup(
+              actionComponents, 
+              'Actions', 
+              <PlayArrowIcon sx={{ fontSize: 16, mr: 1 }} />,
+              'success'
+            )}
+            
           </Collapse>
         </CardContent>
       </Card>
@@ -510,24 +696,22 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
             {scanResult.dataElements && (
               <TabPanel value={tabValue} index={2}>
                 <Box>
+                  <Typography variant="h5" gutterBottom>
+                    <StorageIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                    Data Elements ({scanResult.dataElements.items.filter(de => 
+                      !searchQuery || 
+                      de.attributes.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    ).length})
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Configure and manage data collection elements for this property
+                  </Typography>
                   {scanResult.dataElements.items
                     .filter(de => 
                       !searchQuery || 
                       de.attributes.name.toLowerCase().includes(searchQuery.toLowerCase())
                     )
-                    .map(de => (
-                      <Card key={de.id} sx={{ mb: 2 }}>
-                        <CardContent>
-                          <Typography variant="h6">{de.attributes.name}</Typography>
-                          <Chip label={`ID: ${de.id}`} size="small" sx={{ mt: 1 }} />
-                          {de.attributes.delegate_descriptor_id && (
-                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                              Type: {de.attributes.delegate_descriptor_id.split('::').pop()}
-                            </Typography>
-                          )}
-                        </CardContent>
-                      </Card>
-                    ))}
+                    .map(de => renderDataElementCard(de))}
                 </Box>
               </TabPanel>
             )}
