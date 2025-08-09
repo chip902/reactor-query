@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useCallback, Suspense } from "react";
 import {
@@ -30,7 +30,7 @@ import {
 	Select,
 	MenuItem,
 	TextField,
-} from '@mui/material';
+} from "@mui/material";
 import {
 	Search as SearchIcon,
 	FilterAlt as FilterIcon,
@@ -47,18 +47,13 @@ import {
 	Support as SupportIcon,
 	Close as CloseIcon,
 	Send as SendIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 import { useApiCache } from "@/app/hooks/useApiCache";
 import { useApiKeys } from "@/app/hooks/useApiKeys";
 import { createApiHeaders } from "@/lib/api-utils";
 import WithApiKeys from "@/components/wrappers/WithApiKeys";
 import type { TruncatedReactorAPIResponseItem } from "@/lib/types";
-import {
-	DataElementSearchResponseItem,
-	ExtensionSearchResponseItem,
-	RuleComponentSearchResponseItem,
-	RuleSearchResponseItem,
-} from "@/lib/types";
+import { DataElementSearchResponseItem, ExtensionSearchResponseItem, RuleComponentSearchResponseItem, RuleSearchResponseItem } from "@/lib/types";
 import highlightSearchInJson from "@/lib/highlightSearchInJson";
 
 // MUI Components
@@ -67,7 +62,7 @@ import MuiPropertyPicker from "@/components/search/MuiPropertyPicker";
 import MuiTextSearch from "@/components/search/MuiTextSearch";
 import MuiExtensionFilter from "@/components/search/MuiExtensionFilter";
 import MuiRuleIdSearch from "@/components/search/MuiRuleIdSearch";
-import MuiSettingsForm from "@/components/forms/MuiSettingsForm";
+import ApiKeyManager from "@/components/settings/ApiKeyManager";
 import MuiYoutubeEmbed from "@/components/MuiYoutubeEmbed";
 import PropertyScanner from "@/components/property-scanner/PropertyScanner";
 import { FloatingThemeToggle } from "@/components/theme/FloatingThemeToggle";
@@ -93,13 +88,7 @@ interface TabPanelProps {
 function TabPanel(props: TabPanelProps) {
 	const { children, value, index, ...other } = props;
 	return (
-		<div
-			role="tabpanel"
-			hidden={value !== index}
-			id={`applet-tabpanel-${index}`}
-			aria-labelledby={`applet-tab-${index}`}
-			{...other}
-		>
+		<div role="tabpanel" hidden={value !== index} id={`applet-tabpanel-${index}`} aria-labelledby={`applet-tab-${index}`} {...other}>
 			{value === index && <Box sx={{ py: 3 }}>{children}</Box>}
 		</div>
 	);
@@ -113,17 +102,17 @@ interface NavigationItem {
 }
 
 const navigationItems: NavigationItem[] = [
-	{ id: 0, icon: <SearchIcon />, label: 'Search Tools', component: 'search' },
-	{ id: 1, icon: <ScannerIcon />, label: 'Property Scanner', component: 'scanner' },
-	{ id: 2, icon: <EditIcon />, label: 'Bulk Edit', component: 'bulk-edit' },
-	{ id: 3, icon: <SettingsIcon />, label: 'Settings', component: 'settings' },
-	{ id: 4, icon: <SupportIcon />, label: 'Support', component: 'support' },
+	{ id: 0, icon: <SearchIcon />, label: "Search Tools", component: "search" },
+	{ id: 1, icon: <ScannerIcon />, label: "Property Scanner", component: "scanner" },
+	{ id: 2, icon: <EditIcon />, label: "Bulk Edit", component: "bulk-edit" },
+	{ id: 3, icon: <SettingsIcon />, label: "Settings", component: "settings" },
+	{ id: 4, icon: <SupportIcon />, label: "Support", component: "support" },
 ];
 
 interface ReactorQueryAppletProps {
 	title?: string;
 	maxHeight?: string | number;
-	initialView?: 'search' | 'scanner' | 'bulk-edit' | 'settings' | 'support';
+	initialView?: "search" | "scanner" | "bulk-edit" | "settings" | "support";
 }
 
 function BulkEditContent() {
@@ -134,9 +123,7 @@ function BulkEditContent() {
 			{apiKeys ? (
 				<BulkRuleEditor apiKeys={apiKeys} />
 			) : (
-				<Alert severity="warning">
-					Please configure your API keys in Settings to use the Bulk Edit feature.
-				</Alert>
+				<Alert severity="warning">Please configure your API keys in Settings to use the Bulk Edit feature.</Alert>
 			)}
 		</>
 	);
@@ -230,7 +217,7 @@ const SearchContent = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		if (!apiKeys) return;
-		
+
 		e.preventDefault();
 		setLoading(true);
 		setError(null);
@@ -327,13 +314,7 @@ const SearchContent = () => {
 		setExtensionsLoading(true);
 		try {
 			const { data } = await fetchExtensions(selectedProperty.id);
-			setExtensions(
-				data.sort((a, b) =>
-					(a.attributes.display_name || a.attributes.name).localeCompare(
-						b.attributes.display_name || b.attributes.name
-					)
-				)
-			);
+			setExtensions(data.sort((a, b) => (a.attributes.display_name || a.attributes.name).localeCompare(b.attributes.display_name || b.attributes.name)));
 		} catch (_error) {
 			setError("Failed to fetch extensions");
 		} finally {
@@ -363,11 +344,7 @@ const SearchContent = () => {
 	}, [tabValue]);
 
 	if (!apiKeys) {
-		return (
-			<Alert severity="info">
-				Please configure your API keys in Settings to use the search tools.
-			</Alert>
-		);
+		return <Alert severity="info">Please configure your API keys in Settings to use the search tools.</Alert>;
 	}
 
 	return (
@@ -376,7 +353,7 @@ const SearchContent = () => {
 				<CardContent>
 					<form onSubmit={handleSubmit}>
 						<Stack spacing={3}>
-							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+							<Stack direction={{ xs: "column", md: "row" }} spacing={2}>
 								<MuiCompanyPicker
 									companies={companies}
 									companiesLoading={companiesLoading}
@@ -392,13 +369,8 @@ const SearchContent = () => {
 								/>
 							</Stack>
 
-							<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-								<Tabs 
-									value={tabValue} 
-									onChange={(_, newValue) => setTabValue(newValue)}
-									variant="scrollable"
-									scrollButtons="auto"
-								>
+							<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+								<Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)} variant="scrollable" scrollButtons="auto">
 									<Tab icon={<SearchIcon />} label="Text Search" />
 									<Tab icon={<FilterIcon />} label="Extension Filter" />
 									<Tab icon={<DocumentIcon />} label="Rule ID Search" />
@@ -431,40 +403,23 @@ const SearchContent = () => {
 							</TabPanel>
 
 							<TabPanel value={tabValue} index={2}>
-								<MuiRuleIdSearch
-									searchValue={searchValue}
-									setSearchValue={setSearchValue}
-								/>
+								<MuiRuleIdSearch searchValue={searchValue} setSearchValue={setSearchValue} />
 							</TabPanel>
 
 							<TabPanel value={tabValue} index={3}>
-								<PublishHistory 
-									selectedCompany={selectedCompany} 
-									selectedProperty={selectedProperty} 
-									apiKeys={apiKeys} 
-								/>
+								<PublishHistory selectedCompany={selectedCompany} selectedProperty={selectedProperty} apiKeys={apiKeys} />
 							</TabPanel>
 
 							<TabPanel value={tabValue} index={4}>
-								<LibraryExport 
-									selectedCompany={selectedCompany} 
-									selectedProperty={selectedProperty} 
-								/>
+								<LibraryExport selectedCompany={selectedCompany} selectedProperty={selectedProperty} />
 							</TabPanel>
 
 							<TabPanel value={tabValue} index={5}>
-								<Relationships 
-									selectedCompany={selectedCompany} 
-									selectedProperty={selectedProperty} 
-									apiKeys={apiKeys} 
-								/>
+								<Relationships selectedCompany={selectedCompany} selectedProperty={selectedProperty} apiKeys={apiKeys} />
 							</TabPanel>
 
 							<TabPanel value={tabValue} index={6}>
-								<Callbacks 
-									selectedProperty={selectedProperty} 
-									apiKeys={apiKeys} 
-								/>
+								<Callbacks selectedProperty={selectedProperty} apiKeys={apiKeys} />
 							</TabPanel>
 
 							{(tabValue === 0 || tabValue === 1 || tabValue === 2) && (
@@ -473,14 +428,10 @@ const SearchContent = () => {
 									variant="contained"
 									size="large"
 									disabled={
-										loading || 
-										!selectedProperty.id || 
-										(!searchValue && tabValue === 0) || 
-										(!selectedExtension.name && tabValue === 1)
+										loading || !selectedProperty.id || (!searchValue && tabValue === 0) || (!selectedExtension.name && tabValue === 1)
 									}
 									startIcon={loading ? <CircularProgress size={20} /> : <SearchIcon />}
-									sx={{ alignSelf: 'flex-start', minWidth: 200, py: 1.5 }}
-								>
+									sx={{ alignSelf: "flex-start", minWidth: 200, py: 1.5 }}>
 									{loading ? "Searching..." : "Search"}
 								</Button>
 							)}
@@ -489,27 +440,19 @@ const SearchContent = () => {
 				</CardContent>
 			</Card>
 
-			{error && (
-				<Alert severity="error">
-					{error}
-				</Alert>
-			)}
+			{error && <Alert severity="error">{error}</Alert>}
 
 			{results && (
 				<Card>
 					<CardContent>
-						<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+						<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
 							<Typography variant="h6" component="h2">
 								{lastSearchType === 0
 									? `${results.meta.total_hits} results found for "${lastSearchedValue}"`
 									: `${results.meta.total_hits} usages found of the ${selectedExtension.display_name} extension`}
 							</Typography>
 							{results.data.length > 0 && (
-								<Button
-									variant="outlined"
-									startIcon={<DownloadIcon />}
-									onClick={handleExport}
-								>
+								<Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleExport}>
 									Export to CSV
 								</Button>
 							)}
@@ -664,13 +607,11 @@ const SupportContent = () => {
 					<Stack spacing={3}>
 						<FormControl fullWidth required>
 							<InputLabel>Subject</InputLabel>
-							<Select
-								value={subject}
-								label="Subject"
-								onChange={(e) => setSubject(e.target.value)}
-							>
+							<Select value={subject} label="Subject" onChange={(e) => setSubject(e.target.value)}>
 								{supportSubjects.map((s) => (
-									<MenuItem key={s} value={s}>{s}</MenuItem>
+									<MenuItem key={s} value={s}>
+										{s}
+									</MenuItem>
 								))}
 							</Select>
 						</FormControl>
@@ -683,11 +624,7 @@ const SupportContent = () => {
 							value={email}
 							onChange={handleEmailChange}
 							error={email.length > 0 && !isEmailValid}
-							helperText={
-								email.length > 0 && !isEmailValid 
-									? "Please enter a valid email address"
-									: "We'll use this to get back to you"
-							}
+							helperText={email.length > 0 && !isEmailValid ? "Please enter a valid email address" : "We'll use this to get back to you"}
 						/>
 
 						<TextField
@@ -708,8 +645,7 @@ const SupportContent = () => {
 							size="large"
 							disabled={status === "sending" || !isEmailValid || !message.trim()}
 							startIcon={status === "sending" ? <CircularProgress size={20} /> : <SendIcon />}
-							sx={{ py: 1.5 }}
-						>
+							sx={{ py: 1.5 }}>
 							{status === "sending" ? "Sending..." : "Send Message"}
 						</Button>
 					</Stack>
@@ -719,15 +655,11 @@ const SupportContent = () => {
 	);
 };
 
-export function ReactorQueryApplet({ 
-	title = "Adobe Launch Tools", 
-	maxHeight = "90vh",
-	initialView = "search" 
-}: ReactorQueryAppletProps) {
+export function ReactorQueryApplet({ title = "Adobe Launch Tools", maxHeight = "90vh", initialView = "search" }: ReactorQueryAppletProps) {
 	const [currentView, setCurrentView] = useState(initialView);
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 	const { apiKeys, isLoading } = useApiKeys();
 
 	const handleDrawerToggle = () => {
@@ -744,41 +676,34 @@ export function ReactorQueryApplet({
 	const renderContent = () => {
 		if (isLoading) {
 			return (
-				<Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+				<Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
 					<CircularProgress />
 				</Box>
 			);
 		}
 
 		switch (currentView) {
-			case 'search':
+			case "search":
 				return <SearchContent />;
-			case 'scanner':
-				return apiKeys ? <PropertyScanner apiKeys={apiKeys} /> : (
+			case "scanner":
+				return apiKeys ? (
+					<PropertyScanner apiKeys={apiKeys} />
+				) : (
 					<Alert severity="info">Please configure your API keys in Settings to use the Property Scanner.</Alert>
 				);
-			case 'bulk-edit':
+			case "bulk-edit":
 				return (
 					<Suspense fallback={<CircularProgress />}>
 						<BulkEditContent />
 					</Suspense>
 				);
-			case 'settings':
+			case "settings":
 				return (
 					<Stack spacing={6}>
-						<MuiSettingsForm />
-						<Box>
-							<Typography variant="h5" component="h2" gutterBottom>
-								How to create your API keys
-							</Typography>
-							<Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-								Follow this video guide to set up your Adobe I/O Console project and obtain the required API credentials.
-							</Typography>
-							<MuiYoutubeEmbed videoId="5s65A_JFld8" title="How to create Adobe Launch API keys" />
-						</Box>
+						<ApiKeyManager />
 					</Stack>
 				);
-			case 'support':
+			case "support":
 				return <SupportContent />;
 			default:
 				return <SearchContent />;
@@ -786,8 +711,8 @@ export function ReactorQueryApplet({
 	};
 
 	const drawer = (
-		<Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-			<Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+		<Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+			<Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 				<Typography variant="h6" component="div">
 					{title}
 				</Typography>
@@ -801,10 +726,7 @@ export function ReactorQueryApplet({
 			<List sx={{ flex: 1 }}>
 				{navigationItems.map((item) => (
 					<ListItem key={item.id} disablePadding>
-						<ListItemButton
-							selected={currentView === item.component}
-							onClick={() => handleNavigation(item.component)}
-						>
+						<ListItemButton selected={currentView === item.component} onClick={() => handleNavigation(item.component)}>
 							<ListItemIcon>{item.icon}</ListItemIcon>
 							<ListItemText primary={item.label} />
 						</ListItemButton>
@@ -816,23 +738,21 @@ export function ReactorQueryApplet({
 
 	return (
 		<WithApiKeys>
-			<Paper 
-				elevation={3} 
-				sx={{ 
-					height: maxHeight, 
-					display: 'flex', 
-					overflow: 'hidden',
+			<Paper
+				elevation={3}
+				sx={{
+					height: maxHeight,
+					display: "flex",
+					overflow: "hidden",
 					borderRadius: 2,
-				}}
-			>
+				}}>
 				{/* Navigation Sidebar */}
 				<Box
 					component="nav"
 					sx={{
 						width: { md: 280 },
 						flexShrink: { md: 0 },
-					}}
-				>
+					}}>
 					{isMobile ? (
 						<Drawer
 							variant="temporary"
@@ -841,49 +761,40 @@ export function ReactorQueryApplet({
 							onClose={handleDrawerToggle}
 							ModalProps={{ keepMounted: true }}
 							sx={{
-								'& .MuiDrawer-paper': {
-									boxSizing: 'border-box',
+								"& .MuiDrawer-paper": {
+									boxSizing: "border-box",
 									width: 280,
 									backgroundColor: theme.palette.background.paper,
 								},
-							}}
-						>
+							}}>
 							{drawer}
 						</Drawer>
 					) : (
 						<Box
 							sx={{
 								width: 280,
-								height: '100%',
+								height: "100%",
 								backgroundColor: theme.palette.background.paper,
 								borderRight: `1px solid ${theme.palette.divider}`,
-							}}
-						>
+							}}>
 							{drawer}
 						</Box>
 					)}
 				</Box>
 
 				{/* Main Content */}
-				<Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+				<Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
 					{/* Mobile App Bar */}
 					{isMobile && (
-						<AppBar 
-							position="static" 
+						<AppBar
+							position="static"
 							elevation={0}
 							sx={{
 								backgroundColor: theme.palette.background.paper,
 								borderBottom: `1px solid ${theme.palette.divider}`,
-							}}
-						>
+							}}>
 							<Toolbar>
-								<IconButton
-									color="inherit"
-									aria-label="open drawer"
-									edge="start"
-									onClick={handleDrawerToggle}
-									sx={{ mr: 2 }}
-								>
+								<IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
 									<MenuIcon />
 								</IconButton>
 								<Typography variant="h6" noWrap component="div">
@@ -894,9 +805,7 @@ export function ReactorQueryApplet({
 					)}
 
 					{/* Content Area */}
-					<Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
-						{renderContent()}
-					</Box>
+					<Box sx={{ flex: 1, overflow: "auto", p: 3 }}>{renderContent()}</Box>
 				</Box>
 
 				{/* Floating Theme Toggle */}

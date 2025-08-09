@@ -21,6 +21,11 @@ import {
   Paper,
   Divider,
   Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -33,12 +38,16 @@ import {
   CallSplit as CallSplitIcon,
   Code as CodeIcon,
   Storage as StorageIcon,
+  Key as KeyIcon,
 } from '@mui/icons-material';
 import { TruncatedReactorAPIResponseItem } from '@/lib/types';
 import { createApiHeaders } from '@/lib/api-utils';
+import formatAttributesWithParsedSettings from '@/lib/formatAttributesWithParsedSettings';
+import formatNestedJsonContent from '@/lib/formatNestedJsonContent';
+import { useApiKeys } from '@/app/hooks/useApiKeys';
 
 interface PropertyScannerProps {
-  apiKeys: {
+  apiKeys?: {
     clientId: string;
     clientSecret: string;
     orgId: string;
@@ -99,7 +108,8 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
+export default function PropertyScanner({ apiKeys: propsApiKeys }: PropertyScannerProps) {
+  const { keySets, activeKeySet, setActiveApiKeySet, apiKeys: hookApiKeys } = useApiKeys();
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState<TruncatedReactorAPIResponseItem[]>([]);
   const [properties, setProperties] = useState<TruncatedReactorAPIResponseItem[]>([]);
@@ -112,15 +122,34 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
   const [expandedRules, setExpandedRules] = useState<Set<string>>(new Set());
   const [expandedComponents, setExpandedComponents] = useState<Set<string>>(new Set());
   const [expandedDataElements, setExpandedDataElements] = useState<Set<string>>(new Set());
+  
+  // Use props API keys if provided, otherwise use the active key from the hook
+  const apiKeys = propsApiKeys || hookApiKeys;
+  const hasMultipleKeys = keySets.length > 1;
 
-  // Load companies on mount
+  // Load companies when component mounts or active key changes
   useEffect(() => {
-    loadCompanies();
+    if (apiKeys) {
+      loadCompanies();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [activeKeySet?.id]);
 
   const loadCompanies = async () => {
+    if (!apiKeys) {
+      setError('No API keys configured');
+      return;
+    }
+    
     try {
+      setLoading(true);
+      setError(null);
+      setCompanies([]);
+      setProperties([]);
+      setSelectedCompany(null);
+      setSelectedProperty(null);
+      setScanResult(null);
+      
       const response = await fetch('/api/reactor/listcompanies', {
         method: 'POST',
         headers: createApiHeaders(apiKeys),
@@ -130,10 +159,17 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
     } catch (err) {
       console.error('Failed to load companies:', err);
       setError('Failed to load companies');
+    } finally {
+      setLoading(false);
     }
   };
 
   const loadProperties = async (companyId: string) => {
+    if (!apiKeys) {
+      setError('No API keys configured');
+      return;
+    }
+    
     try {
       const response = await fetch('/api/reactor/listproperties', {
         method: 'POST',
@@ -159,8 +195,13 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
     }
   };
 
+  const handleKeyChange = (event: SelectChangeEvent) => {
+    const keyId = event.target.value;
+    setActiveApiKeySet(keyId);
+  };
+
   const handleScan = async () => {
-    if (!selectedProperty) return;
+    if (!selectedProperty || !apiKeys) return;
 
     setLoading(true);
     setError(null);
@@ -290,7 +331,7 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
                         fontFamily: 'Monaco, Consolas, "Courier New", monospace',
                         color: 'inherit'
                       }}>
-                        {JSON.stringify(comp.attributes, null, 2)}
+                        {JSON.stringify(formatNestedJsonContent(formatAttributesWithParsedSettings(comp.attributes)), null, 2)}
                       </pre>
                     </Paper>
                     <Box sx={{ mt: 2 }}>
@@ -405,7 +446,7 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
                   fontFamily: 'Monaco, Consolas, "Courier New", monospace',
                   color: 'inherit'
                 }}>
-                  {JSON.stringify(dataElement.attributes, null, 2)}
+                  {JSON.stringify(formatNestedJsonContent(formatAttributesWithParsedSettings(dataElement.attributes)), null, 2)}
                 </pre>
               </Paper>
             </Box>
@@ -587,14 +628,41 @@ export default function PropertyScanner({ apiKeys }: PropertyScannerProps) {
     <Box sx={{ p: 3 }}>
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h4" gutterBottom>
-            Property Scanner
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Scan Adobe Launch properties to analyze rule execution order and data element usage
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+            <Box>
+              <Typography variant="h4" gutterBottom>
+                Property Scanner
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Scan Adobe Launch properties to analyze rule execution order and data element usage
+              </Typography>
+            </Box>
+            {hasMultipleKeys && activeKeySet && (
+              <FormControl size="small" sx={{ minWidth: 200 }}>
+                <InputLabel id="key-select-label">
+                  <KeyIcon sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'middle' }} />
+                  API Key
+                </InputLabel>
+                <Select
+                  labelId="key-select-label"
+                  value={activeKeySet.id}
+                  onChange={handleKeyChange}
+                  label="API Key"
+                >
+                  {keySets.map((keySet) => (
+                    <MenuItem key={keySet.id} value={keySet.id}>
+                      {keySet.label}
+                      {keySet.isDefault && (
+                        <Chip size="small" label="Default" sx={{ ml: 1, height: 20 }} />
+                      )}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          </Box>
 
-          <Stack spacing={3}>
+          <Stack spacing={3} sx={{ mt: 3 }}>
             <Autocomplete
               value={selectedCompany}
               onChange={(_, value) => handleCompanyChange(value)}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { DataElementSearchResponseItem } from "@/lib/types";
 import formatAttributesWithParsedSettings from "@/lib/formatAttributesWithParsedSettings";
+import formatNestedJsonContent from "@/lib/formatNestedJsonContent";
 
 interface ResultItemProps {
 	item: DataElementSearchResponseItem;
@@ -93,7 +94,7 @@ const DataElementSearchResponseRow = ({ item, searchValue, index, highlightSearc
 						<pre className="p-4 bg-[var(--color-code-bg)] rounded-lg overflow-x-auto text-sm text-[var(--color-code-text)]">
 							<div
 								dangerouslySetInnerHTML={{
-									__html: highlightSearchInJson(formatAttributesWithParsedSettings(item.attributes), searchValue),
+									__html: highlightSearchInJson(formatNestedJsonContent(formatAttributesWithParsedSettings(item.attributes)), searchValue),
 								}}
 							/>
 						</pre>

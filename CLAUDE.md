@@ -29,12 +29,21 @@
 - Tabbed interface with search, export, and relationship tools
 - Company/Property selection with caching
 - CSV export functionality
+- **Advanced Formatting**: Automatically formats JavaScript code and JSON in settings fields
+  - Handles both JSON objects and JavaScript code strings
+  - Pretty-prints JavaScript with proper indentation
+  - Unescapes special characters for readable code display
 
 ### 2. Property Scanner (`PropertyScanner` component)
 - Rule execution order analysis with visual indicators
-- Expandable components showing JSON settings
+- Expandable components showing formatted JSON/JavaScript settings
 - Data elements analysis with expandable views
 - Dark mode compatible code block rendering
+- **Smart Code Formatting**: Automatically detects and formats:
+  - JSON objects with proper indentation
+  - JavaScript code within settings fields
+  - Handles both raw JSON and stringified JavaScript code
+  - Preserves code readability with proper formatting and unescaping
 
 ### 3. Bulk Rule Editor (`BulkRuleEditor` component)
 - **Find/Replace**: Search patterns across rule components with optional replacement
@@ -80,6 +89,13 @@
 - **Support**: `/api/admin/sendsupportemail` for user assistance
 
 ## File Structure
+
+### Formatting Utilities
+- **`lib/formatAttributesWithParsedSettings.ts`**: Parses JSON strings in settings fields
+- **`lib/formatNestedJsonContent.ts`**: Formats JavaScript code and nested JSON with proper indentation
+  - Handles escaped characters (\\n, \\t, etc.)
+  - Pretty-prints JavaScript code with proper indentation
+  - Recursively processes nested objects for comprehensive formatting
 
 ### Components
 - **`ReactorQueryApplet.tsx`**: Main embeddable component with navigation

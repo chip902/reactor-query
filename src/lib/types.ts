@@ -19,6 +19,22 @@ export interface UserSettings {
   organizationName?: string;
 }
 
+export interface ApiKeySet {
+  id: string;
+  label: string;
+  orgId: string;
+  clientId: string;
+  clientSecret: string;
+  isDefault?: boolean;
+  createdAt: string;
+  organizationName?: string;
+}
+
+export interface ApiKeysStorage {
+  keySets: ApiKeySet[];
+  activeKeyId: string | null;
+}
+
 export type ReactorAPIResponse = {
   data: Array<{
     id: string;

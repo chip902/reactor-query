@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ExtensionSearchResponseItem } from "@/lib/types";
 import formatAttributesWithParsedSettings from "@/lib/formatAttributesWithParsedSettings";
+import formatNestedJsonContent from "@/lib/formatNestedJsonContent";
 
 interface ResultItemProps {
 	item: ExtensionSearchResponseItem;
@@ -78,7 +79,7 @@ const ExtensionSearchResponseRow = ({ item, searchValue, index, highlightSearchI
 						<pre className="p-4 bg-[var(--color-code-bg)] rounded-lg overflow-x-auto text-sm text-[var(--color-code-text)]">
 							<div
 								dangerouslySetInnerHTML={{
-									__html: highlightSearchInJson(formatAttributesWithParsedSettings(item.attributes), searchValue),
+									__html: highlightSearchInJson(formatNestedJsonContent(formatAttributesWithParsedSettings(item.attributes)), searchValue),
 								}}
 							/>
 						</pre>
